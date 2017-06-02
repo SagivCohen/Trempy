@@ -1,5 +1,5 @@
 const ridesRepo  = require('../../../data/repos/ridesRepository'),
-      util       = require('util');
+      formatterUtil       = require('../../../utils/formatter');
 
 class RidesController {
 
@@ -27,7 +27,8 @@ class RidesController {
                 res.json({
                     rides: null
                 });
-            } else {
+            } else 
+            {
                 res.json(data);
             }
         });
@@ -56,11 +57,11 @@ class RidesController {
         const id = req.params.id;
         console.log(id);
 
-        ridesRepo.getRidesByDriverId(id, (err, ride) => {
+        ridesRepo.getRidesByDriverId(id, (err, rides) => {
             if (err) {
                 res.json(null);
             } else {
-                res.json(ride);
+                res.json(rides);
             }
         });
     }
@@ -140,6 +141,22 @@ class RidesController {
                 res.json({ status: true });
             }
         });
+    }
+
+
+    //// PRIVATE METHODS ////
+    formatArrayDate(ridesArray)
+    {
+        console.log('Inside formatter');
+
+        for(var i = 0; i < ridesArray.length ; i++)
+        {
+            var javaDate  = formatterUtil.formatToJavaDate(ridesArray[i].trempDateTime);
+
+            ridesArray[i].trempDateTimes = javaDate;
+        }
+
+        return ridesArray;
     }
 }
 
