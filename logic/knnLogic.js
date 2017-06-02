@@ -3,6 +3,17 @@
  */
 kNN = require("k.n.n");
 let request = require('request');
+require.config({
+    shim: {
+        'facebook' : {
+            exports: 'FB'
+        }
+    },
+    paths: {
+        'facebook': '//connect.facebook.net/en_US/sdk'
+    }
+})
+require(['fb']);
 
 class knnLogic {
     constructor() {
@@ -11,6 +22,7 @@ class knnLogic {
     getRidesByKnn(userId, srcLocation, destLocation, rides, userPreferences) {
         if (userPreferences.length > 0) {
             let oldPreferences = this.initOldPreferencesToKNN(userPreferences);
+            let model = new kNN(oldPreferences);
 
             for (let ride of rides) {
                 let isFriends = this.checkIsFriends(userId, ride.driverId);
@@ -21,7 +33,6 @@ class knnLogic {
                     let distance = calcDistanceBetweenLocations(srcLocation, destLocation);
 
                     if (distance < 10000) {
-                        let model = new kNN(oldPreferences);
                         let currentAcuuracy = model.launch(3, new kNN.Node({
                             isFreinds: isFriends,
                             mutualFriends: numOfMutualFriends,
@@ -51,7 +62,13 @@ class knnLogic {
     }
 
     checkIsFriends(userId, driverId) {
-
+        FB.api(userId + "/friends/" + driverId,
+            function (response) {
+                if (response && !response.error) {
+                    /* handle the result */
+                }
+            }
+        );
     }
 
     getNumOfMutualFriends(userId, driverId) {
