@@ -1,22 +1,23 @@
 {
-    "name": "trempy",
-    "version": "1.0.0",
-    "repository": {
-        "url": "https://github.com/sagivcn/Trempy"
-    },
-    "license": "MIT",
-    "scripts": {
-        "server": "node server.js",
-        "start": "nodemon server.js"
-    },
-    "dependencies": {
-        "cookie-parser": "^1.4.3",
-        "body-parser": "^1.15.2",
-        "csurf": "^1.9.0",
-        "errorhandler": "^1.5.0",
-        "express": "^4.14.0",
-        "express-session": "^1.14.2",
-        "mongoose": "^4.6.8",
-        "serve-favicon": "~2.3.2"
-    }
+  "name": "trempy",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/sagivcn/Trempy"
+  },
+  "license": "MIT",
+  "scripts": {
+    "server": "node server.js",
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "csurf": "^1.9.0",
+    "errorhandler": "^1.5.0",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "mongoose": "^4.6.8",
+    "request": "^2.81.0",
+    "serve-favicon": "~2.3.2"
+  }
 }

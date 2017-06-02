@@ -106,21 +106,22 @@ class RidesController {
             if (err) {
                 res.json({ status: false });
             } else {
-                res.json(req.body);
+                //TODO: Inform driverID (nice to have)
+                res.json(req);
             }
         });
     }
     unjoinRide(req, res) {
         console.log('(*) Unjoin a Ride');
 
-        // ridesRepo.updateRide(req.params.id, req.body, (err,ride) => {
-        //     if (err) {
-        //         res.json({ status: false });
-        //     } else {
-        //         res.json(ride);
-        //     }
-        // });
-        res.json(null);
+        ridesRepo.unjoinRide(req.body, (err,ride) => {
+            if (err) {
+                res.json({ status: false });
+            } else {
+                //TODO: Inform driverID (nice to have)
+                res.json(ride);
+            }
+        });
     }
 
     //DELETE
