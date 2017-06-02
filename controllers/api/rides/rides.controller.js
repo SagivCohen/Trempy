@@ -32,6 +32,11 @@ class RidesController {
             }
         });
     }
+
+    //TODO: 
+    //1. Get by date
+    //2. Send ret_RideList (Of Date) to Junam with (src, dst)
+    //3. Filtered List = knn(rideList, userId, src, dst)
     getRidesByParams(req, res) {
         console.log('(*) Get Rides By Params');
         
