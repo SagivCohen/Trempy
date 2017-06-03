@@ -17,6 +17,6 @@ const RideSchema = new Schema({
 	destAddress		       : GeoLocation.schema,
 	imageName		       : { type : String },
 	Passengers		       : [{ type : String }]
-});
+}, {versionKey: false});
 
 module.exports = mongoose.model('Ride', RideSchema);

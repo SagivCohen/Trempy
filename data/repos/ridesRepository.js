@@ -95,7 +95,7 @@ class RidesRepository {
             ride.seets = body.seets || ride.seets;
             if(body.trempDateTime)
             {
-                ride.phoneNumber = new Date(body.trempDateTime);
+                ride.trempDateTime = new Date(body.trempDateTime);
             }
             ride.carModel = body.carModel || ride.carModel;
             if(body.sourceAddress)

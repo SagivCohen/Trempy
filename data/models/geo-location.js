@@ -4,6 +4,6 @@ const mongoose = require('mongoose'),
 const GeoLocationSchema = new Schema({
 	long: 		{ type : Number },
 	lat: 			{ type : Number }
-},{ _id : false });
+},{ _id : false, versionKey: false });
 
 module.exports = mongoose.model('GeoLocation', GeoLocationSchema);
