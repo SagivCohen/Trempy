@@ -9,28 +9,36 @@ class distanceLogic {
     constructor() {
     }
 
-    getRidesByDistance(srcLocation, destLocation, rides, callback) {
+    getRidesByDistance(requireSrcLocation, requireDestLocation, rides, callback) {
         let returnRides = {};
+        let ridesCounter = 0;
         for (let ride of rides) {
-            this.calcDistanceBetweenLocations(srcLocation, destLocation, (isTooClose)=> {
+            this.calcDistanceBetweenLocations(requireSrcLocation, requireDestLocation, ride, (isTooClose)=> {
                 if (isTooClose) {
-                    returnRides.add(ride);
+                    returnRides.push(ride);
+                }
+                if (ridesCounter === rides.length){
+                    callback(returnRides);
                 }
             });
         }
-        callback(returnRides);
+
     }
 
-    calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
-        request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}&destinations=${destLocation.lat},${destLocation.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
+    calcDistanceBetweenLocations(srcLocation, destLocation, ride, callback) {
+        request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}|${destLocation.lat},${destLocation.long}&destinations=${ride.sourceAddress.lat},${ride.sourceAddress.long}|${ride.destAddress.lat},${ride.destAddress.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     let bodyJson = JSON.parse(body);
-                    let distnaceByMeters = -1;
-                    if (bodyJson.rows && bodyJson.rows[0].elements && bodyJson.rows[0].elements[0].distance) {
-                        distnaceByMeters = bodyJson.rows[0].elements[0].distance.value;
+                    let sourceDistance = -1;
+                    let destinationDistance = -1;
+                    if (bodyJson.rows && bodyJson.rows[0].elements && bodyJson.rows[0].elements[0].distance &&
+                        bodyJson.rows[1] && bodyJson.rows[1].elements[1] && bodyJson.rows[0].elements[1].distance) {
+                        sourceDistance = bodyJson.rows[0].elements[0].distance.value;
+                        destinationDistance = bodyJson.rows[1].elements[1].distance.value;
 
-                        if (distnaceByMeters < 10000) {
+
+                        if (sourceDistance < 10000 && destinationDistance < 10000) {
                             callback(true);
                         }
                     }
