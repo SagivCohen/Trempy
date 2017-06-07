@@ -28,8 +28,12 @@ export class distanceLogic {
                     let bodyJson = JSON.parse(body);
                     let sourceDistance = -1;
                     let destinationDistance = -1;
-                    if (bodyJson.rows && bodyJson.rows[0].elements && bodyJson.rows[0].elements[0].distance &&
-                        bodyJson.rows[1] && bodyJson.rows[1].elements[1] && bodyJson.rows[0].elements[1].distance) {
+                    if ((bodyJson.rows !== undefined) &&
+                        (bodyJson.rows[0].elements !== undefined) &&
+                        (bodyJson.rows[0].elements[0].distance !== undefined) &&
+                        (bodyJson.rows[1] !== undefined) &&
+                        (bodyJson.rows[1].elements[1] !== undefined) &&
+                        (bodyJson.rows[1].elements[1].distance !== undefined)) {
                         sourceDistance = bodyJson.rows[0].elements[0].distance.value;
                         destinationDistance = bodyJson.rows[1].elements[1].distance.value;
 
