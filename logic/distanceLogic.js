@@ -1,7 +1,4 @@
-/**
- * Created by efrat netanya on 26/05/2017.
- */
-kNN = require("k.n.n");
+
 let request = require('request');
 
 class distanceLogic {
