@@ -6,10 +6,11 @@ export class distanceLogic {
     }
 
     getRidesByDistance(requireSrcLocation, requireDestLocation, rides, callback) {
-        let returnRides = {};
+        let returnRides = [];
         let ridesCounter = 0;
         for (let ride of rides) {
             this.calcDistanceBetweenLocations(requireSrcLocation, requireDestLocation, ride, (isTooClose)=> {
+                ridesCounter++;
                 if (isTooClose) {
                     returnRides.push(ride);
                 }
