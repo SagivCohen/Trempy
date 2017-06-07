@@ -3,17 +3,17 @@
  */
 kNN = require("k.n.n");
 let request = require('request');
-require.config({
-    shim: {
-        'facebook' : {
-            exports: 'FB'
-        }
-    },
-    paths: {
-        'facebook': '//connect.facebook.net/en_US/sdk'
-    }
-})
-require(['fb']);
+// require.config({
+//     shim: {
+//         'facebook' : {
+//             exports: 'FB'
+//         }
+//     },
+//     paths: {
+//         'facebook': '//connect.facebook.net/en_US/sdk'
+//     }
+// })
+// require(['fb']);
 
 class knnLogic {
     constructor() {
@@ -87,20 +87,27 @@ class knnLogic {
 //
 //
 //
-function calcDistanceBetweenLocations(srcLocation, destLocation) {
-    // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.long},${srcLocation.lat}&destinations=${destLocation.long},${destLocation.lat}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`, function (error, response, body) {
+function calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
 
-    request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            let bodyJson = JSON.parse(body);
-            let distnaceByMeters = -1;
-            if (bodyJson.rows && bodyJson.rows[0].elements && bodyJson.rows[0].elements[0].distance) {
-                distnaceByMeters = bodyJson.rows[0].elements[0].distance.value;
-                console.log(bodyJson); // Print the google web page.
-                return Promise(distnaceByMeters);
+    // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`, function (error, response, body) {
+    // request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769&destinations=32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
+    //     function (error, response, body) {
+    srcLocation.lat = 31.9704041;
+    srcLocation.long = 34.771769;
+    destLocation.lat = 32.137793;
+    destLocation.long = 34.840278;
+    request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}&destinations=${destLocation.lat},${destLocation.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                let bodyJson = JSON.parse(body);
+                let distnaceByMeters = -1;
+                if (bodyJson.rows && bodyJson.rows[0].elements && bodyJson.rows[0].elements[0].distance) {
+                    distnaceByMeters = bodyJson.rows[0].elements[0].distance.value;
+                    console.log(bodyJson); // Print the google web page.
+                    callback("hi");
+                }
             }
-        }
-    })
+        })
 }
 // function getAcuurayForEachTremp() {
 //
@@ -126,3 +133,10 @@ function calcDistanceBetweenLocations(srcLocation, destLocation) {
 //     long: 34.10231,
 //     lat: 36.03462
 // };
+let count = 0;
+calcDistanceBetweenLocations({}, {}, (ride)=> {
+    if (ride) {
+        count++;
+        console.log(count);
+    }
+});
