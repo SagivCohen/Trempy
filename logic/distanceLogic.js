@@ -1,6 +1,6 @@
 let request = require('request');
 
-export class distanceLogic {
+class distanceLogic {
 
     constructor() {
     }
@@ -49,6 +49,7 @@ export class distanceLogic {
             })
     }
 }
+module.exports = new distanceLogic();
 
 
 // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`, function (error, response, body) {
