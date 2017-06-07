@@ -1,6 +1,6 @@
 let request = require('request');
 
-class distanceLogic {
+export class distanceLogic {
 
     constructor() {
     }
@@ -13,7 +13,7 @@ class distanceLogic {
                 if (isTooClose) {
                     returnRides.push(ride);
                 }
-                if (ridesCounter === rides.length){
+                if (ridesCounter === rides.length) {
                     callback(returnRides);
                 }
             });
@@ -60,4 +60,11 @@ class distanceLogic {
 //         count++;
 //         console.log(count);
 //     }
-// });
+// // });
+// let simpleRides = {
+// {
+//     sourceAddress = 1,
+//         destAddress = 2
+// }
+// }
+// distanceLogic().getRidesByDistance()
