@@ -5,21 +5,64 @@ class distanceLogic {
     constructor() {
     }
 
-    getRidesByDistance(requireSrcLocation, requireDestLocation, rides, callback) {
+    /**
+     * @return {boolean}
+     */
+
+    getDateByDBFormant(dbFormat) {
+        split = dbFormat.split(" ");
+        time = split[1];
+        date = split[0];
+        dateAfterSplit = date.split("/");
+
+        let year = dateAfterSplit[2];
+        let month = dateAfterSplit[1];
+        if (month < 10) {
+            month = "0" + month;
+        }
+        let day = dateAfterSplit[0];
+        if (day < 10) {
+            day = "0" + day;
+        }
+        dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
+        return (new Date(dateInRealFormat));
+    };
+
+    /**
+     * @return {boolean}
+     */
+    CheckIfRideIsInDate(requiredDate, rideDate) {
+
+        var TWO_HOURS = 60 * 60 * 1000 * 2;
+        let isRideInDate = false;
+        if ((rideDate - requiredDate < TWO_HOURS) && (requiredDate - rideDate < TWO_HOURS)) {
+            isRideInDate = true;
+        }
+
+        return isRideInDate;
+    };
+
+
+    getRidesByQuery(requireSrcLocation, requireDestLocation, reqDate, rides, callback) {
+
         let returnRides = [];
         let ridesCounter = 0;
         for (let ride of rides) {
+
             this.calcDistanceBetweenLocations(requireSrcLocation, requireDestLocation, ride, (isTooClose)=> {
                 ridesCounter++;
+
                 if (isTooClose) {
-                    returnRides.push(ride);
+                    let isRideInDate = this.CheckIfRideIsInDate(this.getDateByDBFormant(reqDate), ride.trempDateTime);
+                    if (isRideInDate){
+                        this.returnRides.push(ride);
+                    }
                 }
                 if (ridesCounter === rides.length) {
                     callback(returnRides);
                 }
             });
         }
-
     }
 
     calcDistanceBetweenLocations(srcLocation, destLocation, ride, callback) {
@@ -49,36 +92,7 @@ class distanceLogic {
             })
     }
 
-    getDateByDBFormant = (dbFormat) => {
-        split = dbFormat.split(" ");
-        time = split[1];
-        date = split[0];
-        dateAfterSplit = date.split("/");
 
-        let year = dateAfterSplit[2];
-        let month = dateAfterSplit[1];
-        if (month < 10) {
-            month = "0" + month;
-        }
-        let day = dateAfterSplit[0];
-        if (day < 10) {
-            day = "0" + day;
-        }
-        dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
-        return (new Date(dateInRealFormat));
-    };
-
-    CheckIfRideIsInDate = (requiredDate, rideDate) => {
-
-        var TWO_HOURS = 60 * 60 * 1000 * 2;
-        if ((rideDate - requiredDate < TWO_HOURS) && (requiredDate - rideDate < TWO_HOURS)) {
-
-            return true;
-        }
-        else {
-            return false
-        }
-    };
 }
 module.exports = new distanceLogic();
 
