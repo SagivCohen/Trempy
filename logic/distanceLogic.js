@@ -48,6 +48,37 @@ class distanceLogic {
                 callback(false);
             })
     }
+
+    getDateByDBFormant = (dbFormat) => {
+        split = dbFormat.split(" ");
+        time = split[1];
+        date = split[0];
+        dateAfterSplit = date.split("/");
+
+        let year = dateAfterSplit[2];
+        let month = dateAfterSplit[1];
+        if (month < 10) {
+            month = "0" + month;
+        }
+        let day = dateAfterSplit[0];
+        if (day < 10) {
+            day = "0" + day;
+        }
+        dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
+        return (new Date(dateInRealFormat));
+    };
+
+    CheckIfRideIsInDate = (requiredDate, rideDate) => {
+
+        var TWO_HOURS = 60 * 60 * 1000 * 2;
+        if ((rideDate - requiredDate < TWO_HOURS) && (requiredDate - rideDate < TWO_HOURS)) {
+
+            return true;
+        }
+        else {
+            return false
+        }
+    };
 }
 module.exports = new distanceLogic();
 
@@ -74,3 +105,9 @@ module.exports = new distanceLogic();
 // }
 // }
 // distanceLogic().getRidesByDistance()
+
+
+s = new Date("1991-05-30T16:29:00");
+d = new Date("1991-05-30T18:28:00");
+console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
+
