@@ -53,5 +53,5 @@ module.exports = new distanceLogic();
 
 s = new Date("1991-05-30T16:29:00");
 d = new Date("1991-05-30T18:28:00");
-console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
+//console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
 

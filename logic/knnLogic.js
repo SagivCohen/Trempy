@@ -3,7 +3,7 @@
  */
 kNN = require("k.n.n");
 let request = require('request');
-let distanceLogic = require('distanceLogic');
+let distanceLogic = require('./distanceLogic');
 // require.config({
 //     shim: {
 //         'facebook' : {
