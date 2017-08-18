@@ -5,22 +5,30 @@ class distanceLogic {
     constructor() {
     }
 
-    getRidesByDistance(requireSrcLocation, requireDestLocation, rides, callback) {
-        let returnRides = [];
-        let ridesCounter = 0;
-        for (let ride of rides) {
-            this.calcDistanceBetweenLocations(requireSrcLocation, requireDestLocation, ride, (isTooClose) => {
-                ridesCounter++;
-                if (isTooClose) {
-                    returnRides.push(ride);
-                }
-                if (ridesCounter === rides.length) {
-                    callback(returnRides);
-                }
-            });
-        }
-
-    }
+    // getRidesByDistance(requireSrcLocation, requireDestLocation, reqDate, rides, callback) {
+    //     let returnRides = [];
+    //     let ridesCounter = 0;
+    //
+    //     let currentSourceDistance;
+    //     let currentDestDistance;
+    //     for (let ride of rides) {
+    //         currentSourceDistance = this.getDistanceFromLatLonInKm(requireSrcLocation.lat, requireSrcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
+    //
+    //         if (currentSourceDistance < 10000) {
+    //             currentDestDistance = this.getDistanceFromLatLonInKm(requireDestLocation.lat, requireDestLocation.long, ride.destAddress.lat, ride.destAddress.long);
+    //             ridesCounter++;
+    //
+    //             if (currentDestDistance < 10000) {
+    //                 let isRideInDate = this.CheckIfRideIsInDate(this.getDateByRequestFormant(reqDate), this.getDateByDBFormant(ride.trempDateTime));
+    //                 if (isRideInDate) {
+    //                     returnRides.push(ride);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    //     return returnRides;
+    // }
 
     getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
         let R = 6371; // Radius of the earth in km
@@ -40,63 +48,6 @@ class distanceLogic {
         return deg * (Math.PI / 180)
     }
 
-    // calcDistanceBetweenLocations(srcLocation, destLocation, ride, callback) {
-    //     request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}|${destLocation.lat},${destLocation.long}&destinations=${ride.sourceAddress.lat},${ride.sourceAddress.long}|${ride.destAddress.lat},${ride.destAddress.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-    //         function (error, response, body) {
-    //             if (!error && response.statusCode == 200) {
-    //                 let bodyJson = JSON.parse(body);
-    //                 let sourceDistance = -1;
-    //                 let destinationDistance = -1;
-    //                 if ((bodyJson.rows !== undefined) &&
-    //                     (bodyJson.rows[0].elements !== undefined) &&
-    //                     (bodyJson.rows[0].elements[0].distance !== undefined) &&
-    //                     (bodyJson.rows[1] !== undefined) &&
-    //                     (bodyJson.rows[1].elements[1] !== undefined) &&
-    //                     (bodyJson.rows[1].elements[1].distance !== undefined)) {
-    //                     sourceDistance = bodyJson.rows[0].elements[0].distance.value;
-    //                     destinationDistance = bodyJson.rows[1].elements[1].distance.value;
-    //
-    //
-    //                     if (sourceDistance < 10000 && destinationDistance < 10000) {
-    //                         callback(true);
-    //                     }
-    //                 }
-    //             }
-    //
-    //             callback(false);
-    //         })
-    // }
-
-    getDateByDBFormant = (dbFormat) => {
-        split = dbFormat.split(" ");
-        time = split[1];
-        date = split[0];
-        dateAfterSplit = date.split("/");
-
-        let year = dateAfterSplit[2];
-        let month = dateAfterSplit[1];
-        if (month < 10) {
-            month = "0" + month;
-        }
-        let day = dateAfterSplit[0];
-        if (day < 10) {
-            day = "0" + day;
-        }
-        dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
-        return (new Date(dateInRealFormat));
-    };
-
-    CheckIfRideIsInDate = (requiredDate, rideDate) => {
-
-        var TWO_HOURS = 60 * 60 * 1000 * 2;
-        if ((rideDate - requiredDate < TWO_HOURS) && (requiredDate - rideDate < TWO_HOURS)) {
-
-            return true;
-        }
-        else {
-            return false
-        }
-    };
 }
 module.exports = new distanceLogic();
 

@@ -3,6 +3,7 @@
  */
 kNN = require("k.n.n");
 let request = require('request');
+let distanceLogic = require('distanceLogic');
 // require.config({
 //     shim: {
 //         'facebook' : {
@@ -19,10 +20,14 @@ class knnLogic {
     constructor() {
     }
 
-    getRidesByKnn(userId, srcLocation, destLocation, rides, userPreferences) {
+    getRidesByKnn(userId, srcLocation, destLocation, reqDate, rides, userPreferences) {
         if (userPreferences.length > 0) {
             let oldPreferences = this.initOldPreferencesToKNN(userPreferences);
             let model = new kNN(oldPreferences);
+            let returnRides = [];
+            let currentSourceDistance;
+            let currentDestDistance;
+            let currentAccuracy;
 
             for (let ride of rides) {
                 let isFriends = this.checkIsFriends(userId, ride.driverId);
@@ -30,20 +35,36 @@ class knnLogic {
 
                 // If they are'nt friends or they hadn't mutual friends then dont return this ride
                 if (isFriends || numOfMutualFriends) {
-                    let distance = calcDistanceBetweenLocations(srcLocation, destLocation);
+                    currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(requireSrcLocation.lat, requireSrcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
 
-                    if (distance < 10000) {
-                        let currentAcuuracy = model.launch(3, new kNN.Node({
-                            isFreinds: isFriends,
-                            mutualFriends: numOfMutualFriends,
-                            distanceByMeters: distance,
-                            type: false
-                        }));
+                    if (currentSourceDistance < 10000) {
+                        currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(requireDestLocation.lat, requireDestLocation.long, ride.destAddress.lat, ride.destAddress.long);
+
+                        if (currentDestDistance < 10000) {
+                            // let isRideInDate = this.CheckIfRideIsInDate(this.getDateByRequestFormant(reqDate), this.getDateByDBFormant(ride.trempDateTime));
+                            // if (isRideInDate) {
+                            currentAccuracy = model.launch(3, new kNN.Node({
+                                isFriends: isFriends,
+                                mutualFriends: numOfMutualFriends,
+                                sourceDistance: currentSourceDistance,
+                                destDistance: currentSourceDistance,
+                                type: false
+                            }));
+
+                            returnRides.push({
+                                currentAccuracy: currentAccuracy,
+                                ride: ride,
+                                isFriends: isFriends,
+                                mutualFriends: numOfMutualFriends,
+                                sourceDistance: currentSourceDistance,
+                                destDistance: currentSourceDistance
+                            })
+                        }
                     }
                 }
             }
         } else {
-            // TODO
+            return
         }
 
     }
@@ -52,7 +73,7 @@ class knnLogic {
         let data = [];
         for (let userPreference of userPreferences) {
             data.push(new kNN.Node({
-                isFreinds: userPreference.preferences.isFriends,
+                isFriends: userPreference.preferences.isFriends,
                 mutualFriends: userPreference.mutualFriends,
                 distanceByMeters: userPreference.distanceByMeters,
                 type: userPreference.isChosen
@@ -74,8 +95,9 @@ class knnLogic {
     getNumOfMutualFriends(userId, driverId) {
 
     }
-}
 
+}
+module.exports = new knnLogic();
 //
 //     let accuracy = getAcuurayForEachTremp();
 // }
@@ -113,48 +135,6 @@ class knnLogic {
 //     long: 34.10231,
 //     lat: 36.03462
 // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // function calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
