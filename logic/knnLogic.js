@@ -87,28 +87,6 @@ class knnLogic {
 //
 //
 //
-// function calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
-//
-//     // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`, function (error, response, body) {
-//     // request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769&destinations=32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-//     //     function (error, response, body) {
-//     srcLocation.lat = 31.9704041;
-//     srcLocation.long = 34.771769;
-//     destLocation.lat = 32.137793;
-//     destLocation.long = 34.840278;
-//     request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}&destinations=${destLocation.lat},${destLocation.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-//         function (error, response, body) {
-//             if (!error && response.statusCode == 200) {
-//                 let bodyJson = JSON.parse(body);
-//                 let distnaceByMeters = -1;
-//                 if (bodyJson.rows && bodyJson.rows[0].elements && bodyJson.rows[0].elements[0].distance) {
-//                     distnaceByMeters = bodyJson.rows[0].elements[0].distance.value;
-//                     console.log(bodyJson); // Print the google web page.
-//                     callback("hi");
-//                 }
-//             }
-//         })
-// }
 
 
 // function getAcuurayForEachTremp() {
@@ -135,39 +113,83 @@ class knnLogic {
 //     long: 34.10231,
 //     lat: 36.03462
 // };
-function calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
-    // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}|${destLocation.lat},${destLocation.long}&destinations=${ride.sourceAddress.lat},${ride.sourceAddress.long}|${ride.destAddress.lat},${ride.destAddress.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-    // request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769|31.3704041,34.771769&destinations=32.237793,34.840278|32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-    request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769|31.3704041,40.77176&destinations=32.237793,34.840278|32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-        function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                let bodyJson = JSON.parse(body);
-                let sourceDistance = -1;
-                let destinationDistance = -1;
-                if ((bodyJson.rows !== undefined) &&
-                    (bodyJson.rows[0].elements !== undefined) &&
-                    (bodyJson.rows[0].elements[0].distance !== undefined) &&
-                    (bodyJson.rows[1] !== undefined) &&
-                    (bodyJson.rows[1].elements[1] !== undefined) &&
-                    (bodyJson.rows[1].elements[1].distance !== undefined)) {
-                    sourceDistance = bodyJson.rows[0].elements[0].distance.value;
-                    destinationDistance = bodyJson.rows[1].elements[1].distance.value;
 
 
-                    if (sourceDistance < 10000 && destinationDistance < 10000) {
-                        callback(true);
-                    }
-                }
-            }
 
-            callback(false);
-        })
-}
 
-let count = 0;
-calcDistanceBetweenLocations({}, {}, (ride)=> {
-    if (ride) {
-        count++;
-        console.log(count);
-    }
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
+//     // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}|${destLocation.lat},${destLocation.long}&destinations=${ride.sourceAddress.lat},${ride.sourceAddress.long}|${ride.destAddress.lat},${ride.destAddress.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
+//     // request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769|31.3704041,34.771769&destinations=32.237793,34.840278|32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
+//     request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769|31.3704041,40.77176&destinations=32.237793,34.840278|32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
+//         function (error, response, body) {
+//             if (!error && response.statusCode == 200) {
+//                 let bodyJson = JSON.parse(body);
+//                 let sourceDistance = -1;
+//                 let destinationDistance = -1;
+//                 if ((bodyJson.rows !== undefined) &&
+//                     (bodyJson.rows[0].elements !== undefined) &&
+//                     (bodyJson.rows[0].elements[0].distance !== undefined) &&
+//                     (bodyJson.rows[1] !== undefined) &&
+//                     (bodyJson.rows[1].elements[1] !== undefined) &&
+//                     (bodyJson.rows[1].elements[1].distance !== undefined)) {
+//                     sourceDistance = bodyJson.rows[0].elements[0].distance.value;
+//                     destinationDistance = bodyJson.rows[1].elements[1].distance.value;
+//
+//
+//                     if (sourceDistance < 10000 && destinationDistance < 10000) {
+//                         callback(true);
+//                     }
+//                 }
+//             }
+//
+//             callback(false);
+//         })
+// }
+//
+// let count = 0;
+// calcDistanceBetweenLocations({}, {}, (ride)=> {
+//     if (ride) {
+//         count++;
+//         console.log(count);
+//     }
+// });
