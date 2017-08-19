@@ -11,7 +11,7 @@ const RideSchema = new Schema({
 	driverId	  		 : { type : String, required: true },
 	phoneNumber	  		 : { type : String, required: true },
 	seets		  		 : { type : Number, required: true },
-	trempDateTime		 : { type : Date, required: true },
+    trempDateTime		 : { type : String, required: true },
 	carModel 		       : { type : String, required: true },
 	sourceAddress		 : GeoLocation.schema,
 	destAddress		       : GeoLocation.schema,

@@ -6,6 +6,7 @@ const mongoose = require('mongoose'),
 
 class RidesRepository {
     //GET
+
     getRides(callback) {
         Ride.find({}, (err, rides) => {
             if (err) { 
@@ -15,6 +16,115 @@ class RidesRepository {
             callback(null, rides);
         });
     }
+
+    //TODO: 2n hours befor+after
+
+    getRidesByDate(dbDate, callback) {
+        var TWO_HOURS = 60 * 60 * 1000 * 2;
+        var parsedDate = new Date(Date.parse(dbDate))
+        var gteDate = new Date(parsedDate.getTime() - TWO_HOURS);
+        var ltDate = new Date(parsedDate.getTime() + TWO_HOURS);
+
+        console.log("gteDate:  " + gteDate.toString());
+        console.log("ltDate:  " + ltDate.toString());
+
+        Ride.find({trempDateTime: {
+            $gte:gteDate.toString(),
+            $lt: ltDate.toString()
+        }}, (err, rides) => {
+            if (err) {
+                console.log(`(!) Failed to get all rides: ${err}`);
+                return callback(err);
+            }
+            callback(null, rides);
+        });
+    }
+    getRidesByDateAvia(dbDate) {
+        var TWO_HOURS = 60 * 60 * 1000 * 2;
+
+//         var a;
+// /// create our date from our nicely formatted Y-m-d H:i:s string
+//         a = new Date(dbDate);
+//         console.log( "beafor: " + a );
+//
+// /// add 30 seconds
+//         a = new Date(a.getTime() + TWO_HOURS);
+// /// use toISOString, it's the closest to Y-m-d H:i:s
+//         a = a.toISOString();
+// /// modify ISO string to get Y-m-d H:i:s
+//         a = a.split('.')[0].replace('T', ' ');
+// /// output!
+//         console.log( "after: " + a );
+//
+//         console.log( a );
+//
+//         var parsedDate = new Date(Date.parse(dbDate))
+//         var gteDate = new Date(parsedDate.getTime() - TWO_HOURS);
+//         var ltDate = new Date(parsedDate.getTime() + TWO_HOURS);
+//
+//         console.log("gteDate:  " + gteDate.toString());
+//         console.log("ltDate:  " + ltDate.toString());
+
+
+        getDateByDBFormant(dbDate);
+        Ride.find({trempDateTime: {
+            $gte:gteDate.toString(),
+            $lt: ltDate.toString()
+        }}, (err, rides) => {
+            if (err) {
+                console.log(`(!) Failed to get all rides: ${err}`);
+            }
+        });
+    }
+
+    getDateByDBFormant(dbFormat) {
+        let split = dbFormat.split(" ");
+        let time = split[1];
+        time = time.split(":");
+        if (time[1] < 10) {
+            time[1] = "0" + time[1];
+        }
+        time = time[0] + ":" + time[1] + ":00";
+        let date = split[0];
+        let dateAfterSplit = date.split("/");
+
+        let year = dateAfterSplit[2];
+        let month = dateAfterSplit[1];
+        if (month < 10) {
+            month = "0" + month;
+        }
+        let day = dateAfterSplit[0];
+        if (day < 10) {
+            day = "0" + day;
+        }
+        let dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
+        return (new Date(dateInRealFormat));
+    };
+
+    getDateByRequestFormant(reqFormat) {
+        let split = reqFormat.split("T");
+        let time = split[1];
+        time = time.split(":");
+        if (time[1] < 10) {
+            time[1] = "0" + time[1];
+        }
+        time = time[0] + ":" + time[1] + ":00";
+        let date = split[0];
+        let dateAfterSplit = date.split("/");
+
+        let year = dateAfterSplit[2];
+        let month = dateAfterSplit[1];
+        if (month < 10) {
+            month = "0" + month;
+        }
+        let day = dateAfterSplit[0];
+        if (day < 10) {
+            day = "0" + day;
+        }
+        let dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
+        return (new Date(dateInRealFormat));
+    };
+
     getRidesByParams(query, callback) {
 
         var location = query.src.split(",");
@@ -63,7 +173,7 @@ class RidesRepository {
         var ride = new Ride({'driverId': body.driverId,
                 'phoneNumber': body.phoneNumber,
                 'seets':body.seets,
-                'trempDateTime': new Date(),
+                'trempDateTime': body.trempDateTime,
                 'carModel': body.carModel,
                 'sourceAddress': new GeoLocation({ "long": body.sourceAddress.long , "lat": body.sourceAddress.lat }),
                 'destAddress': new GeoLocation({ "long": body.destAddress.long , "lat": body.destAddress.lat }),
@@ -95,7 +205,7 @@ class RidesRepository {
             ride.seets = body.seets || ride.seets;
             if(body.trempDateTime)
             {
-                ride.phoneNumber = new Date(body.trempDateTime);
+                ride.phoneNumber = body.trempDateTime;
             }
             ride.carModel = body.carModel || ride.carModel;
             if(body.sourceAddress)
@@ -158,7 +268,7 @@ class RidesRepository {
             ride.seets = body.seets || ride.seets;
             if(body.trempDateTime)
             {
-                ride.phoneNumber = new Date(body.trempDateTime);
+                ride.phoneNumber = body.trempDateTime;
             }
             ride.carModel = body.carModel || ride.carModel;
             if(body.sourceAddress)
