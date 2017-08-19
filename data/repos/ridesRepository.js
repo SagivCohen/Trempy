@@ -47,6 +47,16 @@ class RidesRepository {
             callback(null, rides);
         });
     }
+    getJoinedRidesByUserId(userId, callback) {
+
+        Ride.find({ 'Passengers': userId }, (err, rides) => {
+            if (err) { 
+                console.log(`(!) Failed to get joined rides by userId: ${err}`); 
+                return callback(err); 
+            }
+            callback(null, rides);
+        });
+    }
     getRideById(id, callback) {
 
         Ride.findById(id, (err, ride) => {
@@ -63,7 +73,7 @@ class RidesRepository {
         var ride = new Ride({'driverId': body.driverId,
                 'phoneNumber': body.phoneNumber,
                 'seets':body.seets,
-                'trempDateTime': new Date(),
+                'trempDateTime': body.trempDateTime,
                 'carModel': body.carModel,
                 'sourceAddress': new GeoLocation({ "long": body.sourceAddress.long , "lat": body.sourceAddress.lat }),
                 'destAddress': new GeoLocation({ "long": body.destAddress.long , "lat": body.destAddress.lat }),
@@ -93,10 +103,7 @@ class RidesRepository {
 
             ride.phoneNumber = body.phoneNumber || ride.phoneNumber;
             ride.seets = body.seets || ride.seets;
-            if(body.trempDateTime)
-            {
-                ride.phoneNumber = new Date(body.trempDateTime);
-            }
+            ride.trempDateTime = body.trempDateTime || ride.trempDateTime;
             ride.carModel = body.carModel || ride.carModel;
             if(body.sourceAddress)
             {

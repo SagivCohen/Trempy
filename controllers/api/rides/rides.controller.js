@@ -1,5 +1,5 @@
-const ridesRepo  = require('../../../data/repos/ridesRepository'),
-      util       = require('util');
+const ridesRepo = require('../../../data/repos/ridesRepository'),
+    distanceUtil = require('../../../logic/distanceLogic');
 
 class RidesController {
 
@@ -7,6 +7,7 @@ class RidesController {
         router.get('/', this.getRides.bind(this));
         router.get('/params', this.getRidesByParams.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
+        router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
         router.get('/:id', this.getRideById.bind(this));
 
         router.post('/', this.addRide.bind(this));
@@ -32,21 +33,45 @@ class RidesController {
             }
         });
     }
-
-    //TODO: 
-    //1. Get by date
-    //2. Send ret_RideList (Of Date) to Junam with (src, dst)
-    //3. Filtered List = knn(rideList, userId, src, dst)
     getRidesByParams(req, res) {
         console.log('(*) Get Rides By Params');
-        
-        ridesRepo.getRidesByParams(req.query, (err, data) => {
+
+        // ridesRepo.getRidesByParams(req.query, (err, data) => {
+        //     if (err) {
+        //         res.json({
+        //             rides: null
+        //         });
+        //     } else {
+        //         res.json(data);
+        //     }
+        // });
+
+        var src = req.query.src.split("T");
+        src = { long: src[0], lat: src[1] };
+
+        var dst = req.query.dst.split("T");
+        dst = { long: dst[0], lat: dst[1] };
+
+        console.log(req.query);
+        console.log(' ');
+
+        ridesRepo.getRides((err, allRides) => {
             if (err) {
                 res.json({
                     rides: null
                 });
             } else {
-                res.json(data);
+
+                distanceUtil.getRidesByDistance(src, dst, req.query.date, allRides , function (filterRides) {
+                    console.log("Filtered Rides:");
+                    console.log(filterRides);
+                    console.log(" ");
+                    
+
+                    return res.json(filterRides);
+                });
+
+                // return res.json(allRides);
             }
         });
     }
@@ -57,6 +82,19 @@ class RidesController {
         console.log(id);
 
         ridesRepo.getRidesByDriverId(id, (err, ride) => {
+            if (err) {
+                res.json(null);
+            } else {
+                res.json(ride);
+            }
+        });
+    }
+    getJoinedRidesByUserId(req, res) {
+        console.log('(*) Get joined rides by user id');
+
+        const id = req.params.id;
+
+        ridesRepo.getJoinedRidesByUserId(id, (err, ride) => {
             if (err) {
                 res.json(null);
             } else {
@@ -85,7 +123,7 @@ class RidesController {
 
         ridesRepo.addRide(req.body, (err, ride) => {
             if (err) {
-                res.json({status: false, error: 'Insert failed', ride: null});
+                res.json({ status: false, error: 'Insert failed', ride: null });
             } else {
                 res.json({ status: true, error: null, ride: ride });
             }
@@ -96,7 +134,7 @@ class RidesController {
     updateRide(req, res) {
         console.log('(*) Update ride by id');
 
-        ridesRepo.updateRide(req.params.id, req.body, (err,ride) => {
+        ridesRepo.updateRide(req.params.id, req.body, (err, ride) => {
             if (err) {
                 res.json({ status: false });
             } else {
@@ -106,20 +144,19 @@ class RidesController {
     }
     joinRide(req, res) {
         console.log('(*) Join a Ride');
-
-        ridesRepo.joinRide(req.body, (err,ride) => {
+        ridesRepo.joinRide(req.body, (err, ride) => {
             if (err) {
                 res.json({ status: false });
             } else {
                 //TODO: Inform driverID (nice to have)
-                res.json(req);
+                res.json(ride);
             }
         });
     }
     unjoinRide(req, res) {
         console.log('(*) Unjoin a Ride');
 
-        ridesRepo.unjoinRide(req.body, (err,ride) => {
+        ridesRepo.unjoinRide(req.body, (err, ride) => {
             if (err) {
                 res.json({ status: false });
             } else {

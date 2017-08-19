@@ -13,7 +13,17 @@ class DBSeeder {
         mongoose.connection.db.listCollections({name: 'rides'})
             .next((err, collinfo) => {
                 if (!collinfo) {
-                    this.seed();
+                    this.seedRides();
+                }
+                else{
+                    console.log('DB has already been seeded');
+                }
+            });
+
+        mongoose.connection.db.listCollections({name: 'users'})
+            .next((err, collinfo) => {
+                if (!collinfo) {
+                    this.seedUsers();
                 }
                 else{
                     console.log('DB has already been seeded');
@@ -21,9 +31,9 @@ class DBSeeder {
             });
     }
     
-    seed() {
+    seedRides() {
 
-        console.log('Seeding data....');
+        console.log('Seeding rides....');
 
         //RIDES
         Ride.remove({});
@@ -32,7 +42,7 @@ class DBSeeder {
 			new Ride({'driverId':'987654321',
                       'phoneNumber': '036511231',
                       'seets':4,
-                      'trempDateTime': new Date(),
+                      'trempDateTime': '1/2/2017 12:00:00',
                       'carModel': 'Mazda',
                       'sourceAddress': new GeoLocation({ "long": 30 , "lat": 31 }),
                       'destAddress': new GeoLocation({ "long": 36 , "lat": 35 }),
@@ -41,7 +51,7 @@ class DBSeeder {
             new Ride({'driverId':'12345654',
                       'phoneNumber': '031233212',
                       'seets':4,
-                      'trempDateTime': new Date(),
+                      'trempDateTime': '2/2/2017 12:00:00',
                       'carModel': 'Mazda',
                       'sourceAddress': new GeoLocation({ "long": 31 , "lat": 32 }),
                       'destAddress': new GeoLocation({ "long": 34 , "lat": 33 }),
@@ -50,14 +60,13 @@ class DBSeeder {
             new Ride({'driverId':'22334455',
                       'phoneNumber': '031233212',
                       'seets':4,
-                      'trempDateTime': new Date(),
+                      'trempDateTime': '3/2/2017 12:00:00',
                       'carModel': 'Mazda',
                       'sourceAddress': new GeoLocation({ "long": 33 , "lat": 34 }),
                       'destAddress': new GeoLocation({ "long": 32 , "lat": 31 }),
                       'imageName': 'blabla3.jpg',
                       'Passengers': ['123456', '654321']}),
 		];
-
         for (var i = 0; i < rides.length; i++) {
             
 			var ride = rides[i];
@@ -66,6 +75,49 @@ class DBSeeder {
                     console.log(err);
                 } else {
                     console.log('New Ride: [' + r._id +'] - ' + r.sourceAddress);
+                }
+            });
+        }
+
+        //Users
+        User.remove({});
+        var users = 
+        [
+            new User({'userId':'987654321'}),
+            new User({'userId':'123456789'})
+        ];
+
+        for (var i = 0; i < users.length; i++) {
+			var user = users[i];
+            user.save((err, r) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log('New user: [' + user.userId +']');
+                }
+            });
+        }
+    }
+
+    seedUsers() {
+
+        console.log('Seeding users....');
+
+        //Users
+        User.remove({});
+        var users = 
+        [
+            new User({'userId':'987654321'}),
+            new User({'userId':'123456789'})
+        ];
+
+        for (var i = 0; i < users.length; i++) {
+			var user = users[i];
+            user.save((err, r) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log('New user: [' + user.userId +']');
                 }
             });
         }

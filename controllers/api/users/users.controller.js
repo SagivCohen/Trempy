@@ -6,9 +6,7 @@ class UsersController {
     constructor(router) {
         router.get('/', this.getUsers.bind(this));
         router.get('/:id', this.getUserById.bind(this));
-        router.post('/', this.addUser.bind(this));
-        router.put('/:id', this.updateUser.bind(this));
-        router.delete('/:id', this.deleteUser.bind(this));
+        router.post('/:id', this.addUser.bind(this));
     }
 
     //GET
@@ -29,7 +27,6 @@ class UsersController {
         console.log('(*) Get user by id');
 
         const id = req.params.id;
-        console.log(id);
 
         usersRepo.getUserById(id, (err, user) => {
             if (err) {
@@ -43,41 +40,30 @@ class UsersController {
     //ADD
     addUser(req, res) {
         console.log('(*) Adding a user');
-        console.log(req.body);
-        // console.log(JSON.parse(req.body));
-        usersRepo.addUser(req.body, (err, user) => {
+        
+        const id = req.params.id;
+        usersRepo.getUserById(id, (err, users) => {
+            if (err) {
+                return res.json(null);
+            } else {
+                if(users.length > 0)
+                {
+                    var ret = {exist: true};
+                    return res.json(ret);
+                }
+
+                // console.log(JSON.parse(req.body));
+                usersRepo.addUser(id, (err, user) => {
                     if (err) {
                         res.json({status: false, error: 'Insert failed',user: null});
                     } else {
-                        res.json({ status: true, error: null, user: user });
+                        var ret = {status: true, exist: false, user: user};
+                        res.json(ret);
                     }
                 });
-    }
-
-    //UPDATE
-    updateUser(req, res) {
-        console.log('(*) Update user by id');
-
-        usersRepo.updateUser(req.params.id, req.body, (err) => {
-            if (err) {
-                res.json({ status: false });
-            } else {
-                res.json({ status: true });
             }
         });
-    }
 
-    //DELETE
-    deleteUser(req, res) {
-        console.log('(*) Delete user by id');
-
-        usersRepo.deleteUser(req.params.id, (err) => {
-            if (err) {
-                res.json({ status: false });
-            } else {
-                res.json({ status: true });
-            }
-        });
     }
 }
 
