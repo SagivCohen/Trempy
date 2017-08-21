@@ -157,6 +157,16 @@ class RidesRepository {
             callback(null, rides);
         });
     }
+    getJoinedRidesByUserId(userId, callback) {
+
+        Ride.find({ 'Passengers': userId }, (err, rides) => {
+            if (err) {
+                console.log(`(!) Failed to get joined rides by userId: ${err}`);
+                return callback(err);
+            }
+            callback(null, rides);
+        });
+    }
     getRideById(id, callback) {
 
         Ride.findById(id, (err, ride) => {
@@ -203,10 +213,7 @@ class RidesRepository {
 
             ride.phoneNumber = body.phoneNumber || ride.phoneNumber;
             ride.seets = body.seets || ride.seets;
-            if(body.trempDateTime)
-            {
-                ride.phoneNumber = body.trempDateTime;
-            }
+            ride.trempDateTime = body.trempDateTime || ride.trempDateTime;
             ride.carModel = body.carModel || ride.carModel;
             if(body.sourceAddress)
             {
@@ -237,13 +244,14 @@ class RidesRepository {
                 console.log(`(!) Failed to get ride by id: ${err}`); 
                 return callback(err); 
             }
-            //TODO: return new 'reject'
+            //TODO: return 'reject' (No room for new trempist)
             if(ride.seets < 1)
             {
                 return callback(err);
             }
+
             ride.seets = ride.seets -1;
-            ride.seets++;
+            ride.Passengers.push(body.userId);
 
             ride.save((err, ride) => {
                 if (err) { 
@@ -255,37 +263,30 @@ class RidesRepository {
             });
         });
     }
-    unjoinRide(id, body, callback) {
+    unjoinRide(body, callback) {
 
-        //validate ride exist
-        this.getRideById(id, (err, ride) => {
+        //TODO: validate user exist
+        this.getRideById(body.rideId, (err, ride) => {
             if (err) { 
-                console.log(`(!) Failed to get ride by id: ${err}`); 
+                console.log(`(!) Failed to unjoin ride: ${err}`);
                 return callback(err); 
             }
 
-            ride.phoneNumber = body.phoneNumber || ride.phoneNumber;
-            ride.seets = body.seets || ride.seets;
-            if(body.trempDateTime)
+            //TODO: return 'reject' (No room for new trempist)
+            if(ride.Passengers.indexOf(body.userId) < 0)
             {
-                ride.phoneNumber = body.trempDateTime;
+                return callback(err);
             }
-            ride.carModel = body.carModel || ride.carModel;
-            if(body.sourceAddress)
-            {
-                ride.sourceAddress = new GeoLocation({ "long": body.sourceAddress.long , "lat": body.sourceAddress.lat })
-            }
-            if(body.destAddress)
-            {
-                ride.destAddress = new GeoLocation({ "long": body.destAddress.long , "lat": body.destAddress.lat })
-            }
-            ride.imageName = body.imageName || ride.imageName;
-            ride.Passengers = body.Passengers || ride.Passengers;
+
+            ride.seets = ride.seets +1;
+            console.log(ride.Passengers);
+            ride.Passengers.splice(ride.Passengers.indexOf(body.userId),1);
+            console.log(ride.Passengers);
 
             ride.save((err, ride) => {
                 if (err) { 
-                    console.log(`(!) Failed to update a ride in DB: ${err}`); 
-                    return callback(err, null); 
+                    console.log(`(!) Failed to unjoin ride: ${err}`);
+                    return callback(err, null);
                 }
 
                 callback(null, ride);

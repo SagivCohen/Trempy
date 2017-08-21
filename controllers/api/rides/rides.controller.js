@@ -1,4 +1,5 @@
 const ridesRepo = require('../../../data/repos/ridesRepository'),
+    distanceUtil = require('../../../logic/distanceLogic'),
     util = require('util'),
     knnLogic = require("../../../logic/knnLogic");
 
@@ -9,6 +10,7 @@ class RidesController {
         router.get('/', this.getRides.bind(this));
         router.get('/params', this.getRidesByParams.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
+        router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
         router.get('/:id', this.getRideById.bind(this));
 
         router.post('/', this.addRide.bind(this));
@@ -38,11 +40,24 @@ class RidesController {
     getRidesByParams(req, res) {
         console.log('(*) Get Rides By Params');
 
-        let src = req.query.src.split("T");
-        src = {long: src[0], lat: src[1]};
+        // ridesRepo.getRidesByParams(req.query, (err, data) => {
+        //     if (err) {
+        //         res.json({
+        //             rides: null
+        //         });
+        //     } else {
+        //         res.json(data);
+        //     }
+        // });
 
-        let dst = req.query.dst.split("T");
-        dst = {long: dst[0], lat: dst[1]};
+        var src = req.query.src.split("T");
+        src = { long: src[0], lat: src[1] };
+
+        var dst = req.query.dst.split("T");
+        dst = { long: dst[0], lat: dst[1] };
+
+        console.log(req.query);
+        console.log(' ');
 
         ridesRepo.getRides((err, allRides) => {
             if (err) {
@@ -87,6 +102,19 @@ class RidesController {
         });
     }
 
+    getJoinedRidesByUserId(req, res) {
+        console.log('(*) Get joined rides by user id');
+
+        const id = req.params.id;
+
+        ridesRepo.getJoinedRidesByUserId(id, (err, ride) => {
+            if (err) {
+                res.json(null);
+            } else {
+                res.json(ride);
+            }
+        });
+    }
     getRideById(req, res) {
         console.log('(*) Get ride by id');
 
@@ -108,7 +136,7 @@ class RidesController {
 
         ridesRepo.addRide(req.body, (err, ride) => {
             if (err) {
-                res.json({status: false, error: 'Insert failed', ride: null});
+                res.json({ status: false, error: 'Insert failed', ride: null });
             } else {
                 res.json({status: true, error: null, ride: ride});
             }
@@ -121,7 +149,7 @@ class RidesController {
 
         ridesRepo.updateRide(req.params.id, req.body, (err, ride) => {
             if (err) {
-                res.json({status: false});
+                res.json({ status: false });
             } else {
                 res.json(ride);
             }
@@ -133,9 +161,10 @@ class RidesController {
 
         ridesRepo.joinRide(req.body, (err, ride) => {
             if (err) {
-                res.json({status: false});
+                res.json({ status: false });
             } else {
-                res.json(req.body);
+                //TODO: Inform driverID (nice to have)
+                res.json(ride);
             }
         });
     }
@@ -143,14 +172,14 @@ class RidesController {
     unjoinRide(req, res) {
         console.log('(*) Unjoin a Ride');
 
-        // ridesRepo.updateRide(req.params.id, req.body, (err,ride) => {
-        //     if (err) {
-        //         res.json({ status: false });
-        //     } else {
-        //         res.json(ride);
-        //     }
-        // });
-        res.json(null);
+        ridesRepo.unjoinRide(req.body, (err, ride) => {
+            if (err) {
+                res.json({ status: false });
+            } else {
+                //TODO: Inform driverID (nice to have)
+                res.json(ride);
+            }
+        });
     }
 
     //DELETE
@@ -159,9 +188,9 @@ class RidesController {
 
         ridesRepo.deleteRide(req.params.id, (err) => {
             if (err) {
-                res.json({status: false});
+                res.json({ status: false });
             } else {
-                res.json({status: true});
+                res.json({ status: true });
             }
         });
     }

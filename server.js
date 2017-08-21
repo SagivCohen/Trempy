@@ -8,7 +8,7 @@ const express       = require('express'),
     database        = require('./data/database'),
     seeder          = require('./data/dbSeeder'),
     app             = express(),
-    port            = 3000;
+    port            = 80;
 
 class Server {
 
