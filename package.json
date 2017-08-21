@@ -19,6 +19,7 @@
     "k.n.n": "^1.0.3",
     "mongoose": "^4.6.8",
     "request": "^2.81.0",
-    "serve-favicon": "~2.3.2"
+    "serve-favicon": "~2.3.2",
+    "dateformat": "^2.0.0"
   }
 }

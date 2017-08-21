@@ -6,7 +6,6 @@ const   mongoose = require('mongoose'),
         dbConfig = require('./configLoader').databaseConfig,
         connectionString = `mongodb://${dbConfig.host}/${dbConfig.database}`,
         connection = null;
-var ridesRepoAvia = require('./repos/ridesRepository');
 class DBSeeder {
     
     init() {
@@ -77,8 +76,6 @@ class DBSeeder {
                     console.log('New Ride: [' + r._id +'] - ' + r.sourceAddress);
                 }
             });
-            ridesRepoAvia.getRidesByDateAvia(ride.trempDateTime);
-
         }
 
         //Users

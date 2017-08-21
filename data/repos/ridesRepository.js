@@ -1,7 +1,8 @@
 const mongoose = require('mongoose'),
       Schema = mongoose.Schema,
       Ride = require('../models/ride');
-      GeoLocation = require('../models/geo-location'),	
+      GeoLocation = require('../models/geo-location'),
+          dateformat = require('dateformat'),
       usersRepo = require('./usersRepository');
 
 class RidesRepository {
@@ -19,67 +20,60 @@ class RidesRepository {
 
     //TODO: 2n hours befor+after
 
-    getRidesByDate(dbDate, callback) {
-        var TWO_HOURS = 60 * 60 * 1000 * 2;
-        var parsedDate = new Date(Date.parse(dbDate))
-        var gteDate = new Date(parsedDate.getTime() - TWO_HOURS);
-        var ltDate = new Date(parsedDate.getTime() + TWO_HOURS);
+    // getRidesByDate(dbDate, callback) {
+    //     var TWO_HOURS = 60 * 60 * 1000 * 2;
+    //     var parsedDate = new Date(Date.parse(dbDate))
+    //     var gteDate = new Date(parsedDate.getTime() - TWO_HOURS);
+    //     var ltDate = new Date(parsedDate.getTime() + TWO_HOURS);
+    //
+    //     console.log("gteDate:  " + gteDate.toString());
+    //     console.log("ltDate:  " + ltDate.toString());
+    //
+    //     Ride.find({trempDateTime: {
+    //         $gte:gteDate.toString(),
+    //         $lt: ltDate.toString()
+    //     }}, (err, rides) => {
+    //         if (err) {
+    //             console.log(`(!) Failed to get all rides: ${err}`);
+    //             return callback(err);
+    //         }
+    //         callback(null, rides);
+    //     });
+    // }
+    getRidesByDateAvia(dbDate) {
+        let splitDate = dbDate.split(" ");
+        let date = splitDate[0];
+        let time = splitDate[1];
+        let splitTime =  time.split(":");
+        let hour =  parseInt(splitTime[0]);
+        let minutes = splitTime[1];
+        let seconds = splitTime[2];
 
+        // var gteDate = dateFormat.setHours(dateFormat.getHours() - 2);
+        // var ltDate =dateFormat.setHours(dateFormat.getHours() + 2);
+        console.log("DB date:  " + dbDate.toString());
+
+        var gteDate = date + " " + (hour-2).toString() + ":" + minutes + ":"+seconds;
+        var ltDate =date + " " + (hour+2).toString() + ":" + minutes + ":"+seconds;;
         console.log("gteDate:  " + gteDate.toString());
         console.log("ltDate:  " + ltDate.toString());
 
-        Ride.find({trempDateTime: {
-            $gte:gteDate.toString(),
-            $lt: ltDate.toString()
-        }}, (err, rides) => {
-            if (err) {
-                console.log(`(!) Failed to get all rides: ${err}`);
-                return callback(err);
-            }
-            callback(null, rides);
-        });
-    }
-    getRidesByDateAvia(dbDate) {
-        var TWO_HOURS = 60 * 60 * 1000 * 2;
-
-//         var a;
-// /// create our date from our nicely formatted Y-m-d H:i:s string
-//         a = new Date(dbDate);
-//         console.log( "beafor: " + a );
-//
-// /// add 30 seconds
-//         a = new Date(a.getTime() + TWO_HOURS);
-// /// use toISOString, it's the closest to Y-m-d H:i:s
-//         a = a.toISOString();
-// /// modify ISO string to get Y-m-d H:i:s
-//         a = a.split('.')[0].replace('T', ' ');
-// /// output!
-//         console.log( "after: " + a );
-//
-//         console.log( a );
-//
-//         var parsedDate = new Date(Date.parse(dbDate))
-//         var gteDate = new Date(parsedDate.getTime() - TWO_HOURS);
-//         var ltDate = new Date(parsedDate.getTime() + TWO_HOURS);
-//
-//         console.log("gteDate:  " + gteDate.toString());
-//         console.log("ltDate:  " + ltDate.toString());
-
-
-        getDateByDBFormant(dbDate);
-        Ride.find({trempDateTime: {
+       Ride.find({trempDateTime: {
             $gte:gteDate.toString(),
             $lt: ltDate.toString()
         }}, (err, rides) => {
             if (err) {
                 console.log(`(!) Failed to get all rides: ${err}`);
             }
+           callback(null, rides);
         });
     }
 
     getDateByDBFormant(dbFormat) {
+        console.log("dbFormat" + dbFormat);
         let split = dbFormat.split(" ");
         let time = split[1];
+
         time = time.split(":");
         if (time[1] < 10) {
             time[1] = "0" + time[1];
@@ -97,7 +91,7 @@ class RidesRepository {
         if (day < 10) {
             day = "0" + day;
         }
-        let dateInRealFormat = year + "-" + month + "-" + day + "T" + time;
+        let dateInRealFormat = year + "-" + month + "-" + day + " " + time;
         return (new Date(dateInRealFormat));
     };
 

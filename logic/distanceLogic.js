@@ -48,16 +48,8 @@ class distanceLogic {
         return deg * (Math.PI / 180)
     }
 
-}
-module.exports = new distanceLogic();
 
-s = new Date("1991-05-30T16:29:00");
-d = new Date("1991-05-30T18:28:00");
-//console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
-
-
-
-    getDateByDBFormant(dbFormat) {
+    getDateByDBFormant(dbFormat){
         let split = dbFormat.split(" ");
         let time = split[1];
         time = time.split(":");
@@ -124,17 +116,17 @@ d = new Date("1991-05-30T18:28:00");
         let ridesCounter = 0;
         for (let ride of rides) {
             this.calcDistanceBetweenLocations(requireSrcLocation, requireDestLocation, ride, (isTooClose)=> {
-            ridesCounter++;
-            if (isTooClose) {
-            let isRideInDate = this.CheckIfRideIsInDate(this.getDateByRequestFormant(reqDate), this.getDateByDBFormant(ride.trempDateTime));
-            if (isRideInDate) {
-                returnRides.push(ride);
-            }
-            }
-            // console.log("counter: " + ridesCounter + " rides length: " + rides.length);
-            if (ridesCounter === rides.length) {
-                callback(returnRides);
-            }
+                ridesCounter++;
+                if (isTooClose) {
+                    let isRideInDate = this.CheckIfRideIsInDate(this.getDateByRequestFormant(reqDate), this.getDateByDBFormant(ride.trempDateTime));
+                    if (isRideInDate) {
+                        returnRides.push(ride);
+                    }
+                }
+                // console.log("counter: " + ridesCounter + " rides length: " + rides.length);
+                if (ridesCounter === rides.length) {
+                    callback(returnRides);
+                }
             });
         }
     }
@@ -177,8 +169,8 @@ d = new Date("1991-05-30T18:28:00");
         var p = 0.017453292519943295;
         var c = Math.cos;
         var a = 0.5 -c((lat2-lat1) * p)/2 +
-                c(lat1 * p) * c(lat2 * p) *
-                (1-c((lon2-lon1) * p))/2;
+            c(lat1 * p) * c(lat2 * p) *
+            (1-c((lon2-lon1) * p))/2;
 
         return 12742 * Math.asin(Math.sqrt(a));
     }
@@ -218,6 +210,11 @@ d = new Date("1991-05-30T18:28:00");
     //             return callback(false);
     //         })
     // }
-}
 
+}
 module.exports = new distanceLogic();
+
+s = new Date("1991-05-30T16:29:00");
+d = new Date("1991-05-30T18:28:00");
+//console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
+
