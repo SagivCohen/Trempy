@@ -9,3 +9,5 @@ let example = new kNN(data);
 let results = example.launch(3, new kNN.Node({paramA: 4, paramB: 350, type: false}));
 
 console.log(results.type + ": " + results.percentage + "%");
+
+console.log("ex:" + example)

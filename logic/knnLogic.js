@@ -21,10 +21,11 @@ class knnLogic {
     }
 
     getRidesByKnn(userId, srcLocation, destLocation, reqDate, rides, userPreferences) {
+        let returnRides = [];
         if (userPreferences.length > 0) {
             let oldPreferences = this.initOldPreferencesToKNN(userPreferences);
             let model = new kNN(oldPreferences);
-            let returnRides = [];
+
             let currentSourceDistance;
             let currentDestDistance;
             let currentAccuracy;
@@ -55,7 +56,7 @@ class knnLogic {
                                 isFriends: isFriends,
                                 mutualFriends: numOfMutualFriends,
                                 sourceDistance: currentSourceDistance,
-                                destDistance: currentSourceDistance
+                                destDistance: currentDestDistance
                             })
                         }
                     }
@@ -64,10 +65,32 @@ class knnLogic {
 
             return returnRides.sort(this.compare);
         } else {
-            return rides;
+            for (let ride of rides) {
+                let isFriends = this.checkIsFriends(userId, ride.driverId);
+                let numOfMutualFriends = this.getNumOfMutualFriends(userId, ride.driverId);
+
+                // If they are'nt friends or they hadn't mutual friends then dont return this ride
+                if (isFriends || numOfMutualFriends) {
+                    currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(requireSrcLocation.lat, requireSrcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
+
+                    if (currentSourceDistance < 10000) {
+                        currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(requireDestLocation.lat, requireDestLocation.long, ride.destAddress.lat, ride.destAddress.long);
+
+                        if (currentDestDistance < 10000) {
+
+                            returnRides.push({
+                                ride: ride,
+                                isFriends: isFriends,
+                                mutualFriends: numOfMutualFriends,
+                                sourceDistance: currentSourceDistance,
+                                destDistance: currentDestDistance
+                            })
+                        }
+                    }
+                }
+            }
+            return returnRides;
         }
-
-
     }
 
     compare(a, b) {
@@ -79,7 +102,7 @@ class knnLogic {
             aPercentage = a.currentAccuracy.percentage;
         }
 
-        if (b.currentAccuracy.type === "NotChosen") {
+        if (b.currentAccuracy.type === "Chosen") {
             bPercentage = 1 - b.currentAccuracy.percentage;
         } else {
             bPercentage = b.currentAccuracy.percentage;
