@@ -20,7 +20,7 @@ class knnLogic {
     constructor() {
     }
 
-    getRidesByKnn(userId, srcLocation, destLocation, reqDate, rides, userPreferences) {
+    getRidesByKnn(userId, srcLocation, destLocation, rides, userPreferences) {
         let returnRides = [];
         if (userPreferences.length > 0) {
             let oldPreferences = this.initOldPreferencesToKNN(userPreferences);
@@ -36,10 +36,10 @@ class knnLogic {
 
                 // If they are'nt friends or they hadn't mutual friends then dont return this ride
                 if (isFriends || numOfMutualFriends) {
-                    currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(requireSrcLocation.lat, requireSrcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
+                    currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
 
                     if (currentSourceDistance < 10000) {
-                        currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(requireDestLocation.lat, requireDestLocation.long, ride.destAddress.lat, ride.destAddress.long);
+                        currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
 
                         if (currentDestDistance < 10000) {
                             currentAccuracy = model.launch(3, new kNN.Node({
@@ -56,7 +56,8 @@ class knnLogic {
                                 isFriends: isFriends,
                                 mutualFriends: numOfMutualFriends,
                                 sourceDistance: currentSourceDistance,
-                                destDistance: currentDestDistance
+                                destDistance: currentDestDistance,
+                                type: "noChosen"
                             })
                         }
                     }
@@ -140,24 +141,8 @@ class knnLogic {
 
 }
 module.exports = new knnLogic();
-//
-//     let accuracy = getAcuurayForEachTremp();
-// }
-// //send to client the request list
-// // sort by accuracy
-//
-// // the client chosen tremp
-// // add the new recognition to training set pf specific user
-//
-//
-//
 
 
-// function getAcuurayForEachTremp() {
-//
-// }
-//
-//
 // let data = [new kNN.Node({paramA: 1, paramB: 300, type: 'typeA'}),
 //     new kNN.Node({paramA: 3, paramB: 350, type: 'typeA'}),
 //     new kNN.Node({paramA: 6, paramB: 1200, type: 'typeB'}),
@@ -169,12 +154,4 @@ module.exports = new knnLogic();
 //
 // console.log(results.type + ": " + results.percentage + "%");
 
-// let srcLocation = {
-//     long: 33.10231,
-//     lat: 35.03462
-// };
-// let destLocation = {
-//     long: 34.10231,
-//     lat: 36.03462
-// };
 

@@ -3,7 +3,7 @@ const mongoose = require('mongoose'),
 const preferences = require('./preferences');
 
 const UserPreferencesSchema = new Schema({
-    userId	  		 : { type : String, required: true },
+    userId	  		 : { type : String, required: true, unique:true },
     preferences		 : preferences.schema
 }, {_id: false});
 

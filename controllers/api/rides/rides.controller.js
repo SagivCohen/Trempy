@@ -1,4 +1,5 @@
 const ridesRepo = require('../../../data/repos/ridesRepository'),
+    preferencesRepo = require('../../../data/repos/preferencesRepository'),
     util = require('util'),
     knnLogic = require("../../../logic/knnLogic");
 
@@ -50,23 +51,24 @@ class RidesController {
                     rides: null
                 });
             } else {
-
-                // distanceUtil.getRidesByDistance(src, dst, req.query.date, allRides, function (filterRides) {
-                //     console.log("Filtered Rides:");
-                //     console.log(filterRides);
-                //     console.log(" ");
-                //
-                //
-                //     return res.json(filterRides);
-                // });
-                knnLogic.getRidesByKnn(req.query.fbId, src, dst, req.query.date, allRides, null, (filterRides) =>{
-                    console.log("Filtered Rides:");
-                    console.log(filterRides);
-                    console.log(" ");
+                preferencesRepo.getUserPreferences(req.query.fbId, (err, preferences) => {
+                        if (err) {
+                            res.json({
+                                rides: null
+                            });
+                        } else {
+                            knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
+                                console.log("Filtered Rides:");
+                                console.log(filterRides);
+                                console.log(" ");
 
 
-                    return res.json(filterRides);
-                })
+                                return res.json(filterRides);
+                            })
+                        }
+                    }
+                )
+
                 // return res.json(allRides);
             }
         });
