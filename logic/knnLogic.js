@@ -41,8 +41,6 @@ class knnLogic {
                         currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(requireDestLocation.lat, requireDestLocation.long, ride.destAddress.lat, ride.destAddress.long);
 
                         if (currentDestDistance < 10000) {
-                            // let isRideInDate = this.CheckIfRideIsInDate(this.getDateByRequestFormant(reqDate), this.getDateByDBFormant(ride.trempDateTime));
-                            // if (isRideInDate) {
                             currentAccuracy = model.launch(3, new kNN.Node({
                                 isFriends: isFriends,
                                 mutualFriends: numOfMutualFriends,
@@ -63,10 +61,31 @@ class knnLogic {
                     }
                 }
             }
+
+            return returnRides.sort(this.compare);
         } else {
-            return
+            return rides;
         }
 
+
+    }
+
+    compare(a, b) {
+        let aPercentage;
+        let bPercentage;
+        if (a.currentAccuracy.type === "NotChosen") {
+            aPercentage = 1 - a.currentAccuracy.percentage;
+        } else {
+            aPercentage = a.currentAccuracy.percentage;
+        }
+
+        if (b.currentAccuracy.type === "NotChosen") {
+            bPercentage = 1 - b.currentAccuracy.percentage;
+        } else {
+            bPercentage = b.currentAccuracy.percentage;
+        }
+
+        return bPercentage - aPercentage;
     }
 
     initOldPreferencesToKNN(userPreferences) {
@@ -136,40 +155,3 @@ module.exports = new knnLogic();
 //     lat: 36.03462
 // };
 
-
-// function calcDistanceBetweenLocations(srcLocation, destLocation, callback) {
-//     // request(`https://maps.googleapis.com/maps/api/distancematrix/json?&origins=${srcLocation.lat},${srcLocation.long}|${destLocation.lat},${destLocation.long}&destinations=${ride.sourceAddress.lat},${ride.sourceAddress.long}|${ride.destAddress.lat},${ride.destAddress.long}&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-//     // request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769|31.3704041,34.771769&destinations=32.237793,34.840278|32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-//     request(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=31.9704041,34.771769|31.3704041,40.77176&destinations=32.237793,34.840278|32.137793,34.840278&key=AIzaSyCv_G3rQ0Samqso1wFwfYOksSxZZaVRSI8`,
-//         function (error, response, body) {
-//             if (!error && response.statusCode == 200) {
-//                 let bodyJson = JSON.parse(body);
-//                 let sourceDistance = -1;
-//                 let destinationDistance = -1;
-//                 if ((bodyJson.rows !== undefined) &&
-//                     (bodyJson.rows[0].elements !== undefined) &&
-//                     (bodyJson.rows[0].elements[0].distance !== undefined) &&
-//                     (bodyJson.rows[1] !== undefined) &&
-//                     (bodyJson.rows[1].elements[1] !== undefined) &&
-//                     (bodyJson.rows[1].elements[1].distance !== undefined)) {
-//                     sourceDistance = bodyJson.rows[0].elements[0].distance.value;
-//                     destinationDistance = bodyJson.rows[1].elements[1].distance.value;
-//
-//
-//                     if (sourceDistance < 10000 && destinationDistance < 10000) {
-//                         callback(true);
-//                     }
-//                 }
-//             }
-//
-//             callback(false);
-//         })
-// }
-//
-// let count = 0;
-// calcDistanceBetweenLocations({}, {}, (ride)=> {
-//     if (ride) {
-//         count++;
-//         console.log(count);
-//     }
-// });
