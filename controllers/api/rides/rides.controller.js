@@ -59,17 +59,14 @@ class RidesController {
                         } else {
                             knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
                                 console.log("Filtered Rides:");
-                                console.log(filterRides);
-                                console.log(" ");
-
+                                // console.log(filterRides);
+                                // console.log(" ");
 
                                 return res.json(filterRides);
                             })
                         }
                     }
                 )
-
-                // return res.json(allRides);
             }
         });
     }

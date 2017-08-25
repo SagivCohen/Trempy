@@ -12,11 +12,11 @@ class PreferencesController {
     createOrUpdateUserPreferences(req, res) {
         console.log('(*) Update UserPreferences by id');
 
-        ridesRepo.createOrUpdateUserPreferences(req.params.id, req.body, (err, ride) => {
+        ridesRepo.createOrUpdateUserPreferences(req.params.id, req.body, (err, boolean) => {
             if (err) {
                 res.json({status: false});
             } else {
-                res.json(true);
+                res.json(boolean);
             }
         });
     }
