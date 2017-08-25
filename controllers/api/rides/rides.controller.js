@@ -1,5 +1,8 @@
-const ridesRepo  = require('../../../data/repos/ridesRepository'),
-      util       = require('util');
+const ridesRepo = require('../../../data/repos/ridesRepository'),
+    preferencesRepo = require('../../../data/repos/preferencesRepository'),
+    util = require('util'),
+    knnLogic = require("../../../logic/knnLogic");
+
 
 class RidesController {
 
@@ -32,19 +35,45 @@ class RidesController {
             }
         });
     }
+
     getRidesByParams(req, res) {
         console.log('(*) Get Rides By Params');
-        
-        ridesRepo.getRidesByParams(req.query, (err, data) => {
+
+        let src = req.query.src.split("T");
+        src = {long: src[0], lat: src[1]};
+
+        let dst = req.query.dst.split("T");
+        dst = {long: dst[0], lat: dst[1]};
+
+        ridesRepo.getRides((err, allRides) => {
             if (err) {
                 res.json({
                     rides: null
                 });
             } else {
-                res.json(data);
+                preferencesRepo.getUserPreferences(req.query.fbId, (err, preferences) => {
+                        if (err) {
+                            res.json({
+                                rides: null
+                            });
+                        } else {
+                            knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
+                                console.log("Filtered Rides:");
+                                console.log(filterRides);
+                                console.log(" ");
+
+
+                                return res.json(filterRides);
+                            })
+                        }
+                    }
+                )
+
+                // return res.json(allRides);
             }
         });
     }
+
     getRidesByDriverId(req, res) {
         console.log('(*) Get ride by driver id');
 
@@ -59,6 +88,7 @@ class RidesController {
             }
         });
     }
+
     getRideById(req, res) {
         console.log('(*) Get ride by id');
 
@@ -82,7 +112,7 @@ class RidesController {
             if (err) {
                 res.json({status: false, error: 'Insert failed', ride: null});
             } else {
-                res.json({ status: true, error: null, ride: ride });
+                res.json({status: true, error: null, ride: ride});
             }
         });
     }
@@ -91,25 +121,27 @@ class RidesController {
     updateRide(req, res) {
         console.log('(*) Update ride by id');
 
-        ridesRepo.updateRide(req.params.id, req.body, (err,ride) => {
+        ridesRepo.updateRide(req.params.id, req.body, (err, ride) => {
             if (err) {
-                res.json({ status: false });
+                res.json({status: false});
             } else {
                 res.json(ride);
             }
         });
     }
+
     joinRide(req, res) {
         console.log('(*) Join a Ride');
 
-        ridesRepo.joinRide(req.body, (err,ride) => {
+        ridesRepo.joinRide(req.body, (err, ride) => {
             if (err) {
-                res.json({ status: false });
+                res.json({status: false});
             } else {
                 res.json(req.body);
             }
         });
     }
+
     unjoinRide(req, res) {
         console.log('(*) Unjoin a Ride');
 
@@ -129,9 +161,9 @@ class RidesController {
 
         ridesRepo.deleteRide(req.params.id, (err) => {
             if (err) {
-                res.json({ status: false });
+                res.json({status: false});
             } else {
-                res.json({ status: true });
+                res.json({status: true});
             }
         });
     }
