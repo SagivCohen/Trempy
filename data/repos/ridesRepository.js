@@ -229,10 +229,10 @@ class RidesRepository {
             });
         });
     }
-    joinRide(body, callback) {
+    joinRide(ride, callback) {
 
         //TODO: validate user exist
-        this.getRideById(body.rideId, (err, ride) => {
+        this.getRideById(ride._id, (err, ride) => {
             if (err) { 
                 console.log(`(!) Failed to get ride by id: ${err}`); 
                 return callback(err); 

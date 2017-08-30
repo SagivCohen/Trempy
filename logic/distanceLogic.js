@@ -32,8 +32,8 @@ class distanceLogic {
 
     getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
         let R = 6371; // Radius of the earth in km
-        let dLat = deg2rad(lat2 - lat1);  // deg2rad below
-        let dLon = deg2rad(lon2 - lon1);
+        let dLat = this.deg2rad(lat2 - lat1);  // deg2rad below
+        let dLon = this.deg2rad(lon2 - lon1);
         let a =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
@@ -44,14 +44,14 @@ class distanceLogic {
         return d;
     }
 
-    static deg2rad(deg) {
+    deg2rad(deg) {
         return deg * (Math.PI / 180)
     }
 
 }
 module.exports = new distanceLogic();
 
-s = new Date("1991-05-30T16:29:00");
-d = new Date("1991-05-30T18:28:00");
-console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
+// s = new Date("1991-05-30T16:29:00");
+// d = new Date("1991-05-30T18:28:00");
+// console.log(CheckIfRideIsInDate(getDateByDBFormant("7/5/2017 12:13:14"), getDateByDBFormant("7/5/2017 12:13:14")));
 

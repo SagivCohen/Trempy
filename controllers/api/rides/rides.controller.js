@@ -45,7 +45,7 @@ class RidesController {
         let dst = req.query.dst.split("T");
         dst = {long: dst[0], lat: dst[1]};
 
-        ridesRepo.getRidesByDate(req.query.date, (err, allRides) => {
+        ridesRepo.getRides((err, allRides) => {
             if (err) {
                 res.json({
                     rides: null
@@ -130,11 +130,18 @@ class RidesController {
     joinRide(req, res) {
         console.log('(*) Join a Ride');
 
-        ridesRepo.joinRide(req.body, (err, ride) => {
+    let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
+        preferencesRepo.createOrUpdateUserPreferences(req.body.userId, req.body.choose_index, currentPreferences, (err, boolean) => {
             if (err) {
                 res.json({status: false});
             } else {
-                res.json(req.body);
+                ridesRepo.joinRide(currentPreferences[req.body.choose_index].ride, (err, ride) => {
+                    if (err) {
+                        res.json({status: false});
+                    } else {
+                        res.json(req.body);
+                    }
+                });
             }
         });
     }

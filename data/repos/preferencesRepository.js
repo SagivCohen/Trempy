@@ -16,12 +16,10 @@ class preferencesRepository {
     }
 
     //ADD
-     createOrUpdateUserPreferences(userId, body, callback) {
-        let currentPreferences = body.preferences;
-        currentPreferences[body.index].type = "chosen";
-
+     createOrUpdateUserPreferences(userId ,chooseIndex, preferences, callback) {
+        preferences[chooseIndex].type = "chosen";
         userPreferences.update({'userId': userId},
-            {$push: {userPreferences: currentPreferences}},
+            {$push: {"preferences": preferences}},
             {upsert: true},
             (err, userPreferences) => {
                 if (err) {
