@@ -45,7 +45,7 @@ class RidesController {
         let dst = req.query.dst.split("T");
         dst = {long: dst[0], lat: dst[1]};
 
-        ridesRepo.getRides((err, allRides) => {
+        ridesRepo.getRidesByDate(req.query.date, (err, allRides) => {
             if (err) {
                 res.json({
                     rides: null
