@@ -10,6 +10,7 @@ class RidesController {
         router.get('/', this.getRides.bind(this));
         router.get('/params', this.getRidesByParams.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
+        router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
         router.get('/:id', this.getRideById.bind(this));
 
         router.post('/', this.addRide.bind(this));
@@ -85,7 +86,19 @@ class RidesController {
             }
         });
     }
+    getJoinedRidesByUserId(req, res) {
+        console.log('(*) Get joined rides by user id');
 
+        const id = req.params.id;
+
+        ridesRepo.getJoinedRidesByUserId(id, (err, ride) => {
+            if (err) {
+                res.json(null);
+            } else {
+                res.json(ride);
+            }
+        });
+    }
     getRideById(req, res) {
         console.log('(*) Get ride by id');
 
@@ -107,7 +120,7 @@ class RidesController {
 
         ridesRepo.addRide(req.body, (err, ride) => {
             if (err) {
-                res.json({status: false, error: 'Insert failed', ride: null});
+                res.json({ status: false, error: 'Insert failed', ride: null });
             } else {
                 res.json({status: true, error: null, ride: ride});
             }
@@ -145,18 +158,17 @@ class RidesController {
             }
         });
     }
-
     unjoinRide(req, res) {
         console.log('(*) Unjoin a Ride');
 
-        // ridesRepo.updateRide(req.params.id, req.body, (err,ride) => {
-        //     if (err) {
-        //         res.json({ status: false });
-        //     } else {
-        //         res.json(ride);
-        //     }
-        // });
-        res.json(null);
+        ridesRepo.unjoinRide(req.body, (err, ride) => {
+            if (err) {
+                res.json({ status: false });
+            } else {
+                //TODO: Inform driverID (nice to have)
+                res.json(ride);
+            }
+        });
     }
 
     //DELETE
