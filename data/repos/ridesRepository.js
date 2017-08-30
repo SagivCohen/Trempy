@@ -236,7 +236,7 @@ class RidesRepository {
             });
         });
     }
-    joinRide(ride, callback) {
+    joinRide(ride, userId, callback) {
 
         //TODO: validate user exist
         this.getRideById(ride._id, (err, ride) => {
@@ -251,7 +251,7 @@ class RidesRepository {
             }
 
             ride.seets = ride.seets -1;
-            ride.Passengers.push(body.userId);
+            ride.Passengers.push(userId);
 
             ride.save((err, ride) => {
                 if (err) { 
