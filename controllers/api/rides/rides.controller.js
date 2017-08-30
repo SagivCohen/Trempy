@@ -143,7 +143,8 @@ class RidesController {
     joinRide(req, res) {
         console.log('(*) Join a Ride');
 
-    let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
+let currentPreferences = req.body.Source_Array_preferences;
+    // let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
         preferencesRepo.createOrUpdateUserPreferences(req.body.userId, req.body.choose_index, currentPreferences, (err, boolean) => {
             if (err) {
                 res.json({status: false});

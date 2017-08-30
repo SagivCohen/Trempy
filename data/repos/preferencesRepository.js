@@ -6,12 +6,12 @@ class preferencesRepository {
     //GET
 
     getUserPreferences(userId, callback) {
-        userPreferences.find({'userId': userId}, (err, userPreferences) => {
+        userPreferences.find({'userId': userId}, (err, userPreferencesResult) => {
             if (err) {
                 console.log(`(!) Failed to get all rides: ${err}`);
                 return callback(err);
             }
-            callback(null, userPreferences);
+            callback(null, userPreferencesResult);
         });
     }
 

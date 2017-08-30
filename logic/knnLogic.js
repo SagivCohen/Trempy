@@ -115,12 +115,13 @@ class knnLogic {
 
     initOldPreferencesToKNN(userPreferences) {
         let data = [];
-        for (let userPreference of userPreferences) {
+        for (let userPreference of userPreferences[0].preferences) {
             data.push(new kNN.Node({
-                isFriends: userPreference.preferences.isFriends,
+                isFriends: userPreference.isFriends,
                 mutualFriends: userPreference.mutualFriends,
-                distanceByMeters: userPreference.distanceByMeters,
-                type: userPreference.isChosen
+                sourceDistance: userPreference.sourceDistance,
+                destDistance: userPreference.destDistance,
+                type: userPreference.type
             }))
         }
         return data;
