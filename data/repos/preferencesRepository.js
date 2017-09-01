@@ -19,7 +19,7 @@ class preferencesRepository {
      createOrUpdateUserPreferences(userId ,chooseIndex, preferences, callback) {
         preferences[chooseIndex].type = "chosen";
         userPreferences.update({'userId': userId},
-            {$push: {"preferences": preferences}},
+            {$addToSet: {"preferences": preferences}},
             {upsert: true},
             (err, userPreferences) => {
                 if (err) {

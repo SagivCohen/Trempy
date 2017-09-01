@@ -116,13 +116,18 @@ class knnLogic {
     initOldPreferencesToKNN(userPreferences) {
         let data = [];
         for (let userPreference of userPreferences[0].preferences) {
+
+        for (let index = 0; index < 30; index++) {
+            let element = userPreference._doc[index];
+            
             data.push(new kNN.Node({
-                isFriends: userPreference.isFriends,
-                mutualFriends: userPreference.mutualFriends,
-                sourceDistance: userPreference.sourceDistance,
-                destDistance: userPreference.destDistance,
-                type: userPreference.type
+                isFriends: element.isFriends,
+                mutualFriends: element.mutualFriends,
+                sourceDistance: element.sourceDistance,
+                destDistance: element.destDistance,
+                type: element.type
             }))
+        }
         }
         return data;
     }
@@ -135,7 +140,7 @@ class knnLogic {
         //         }
         //     }
         // );
-        return Math.random() >= 0.5;
+        return Math.floor(Math.random() * 2);
     }
 
     getNumOfMutualFriends(userId, driverId) {
