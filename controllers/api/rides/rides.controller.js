@@ -1,5 +1,6 @@
 const ridesRepo = require('../../../data/repos/ridesRepository'),
     preferencesRepo = require('../../../data/repos/preferencesRepository'),
+    preferencesRepository = require('../../../data/repos/prefRepo'),
     util = require('util'),
     knnLogic = require("../../../logic/knnLogic");
 
@@ -11,7 +12,6 @@ class RidesController {
         router.get('/params', this.getRidesByParams.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
         router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
-        router.get('/pref', this.getPref.bind(this));
         router.get('/:id', this.getRideById.bind(this));
 
         router.post('/', this.addRide.bind(this));
@@ -21,18 +21,6 @@ class RidesController {
         router.put('/:id', this.updateRide.bind(this));
 
         router.delete('/:id', this.deleteRide.bind(this));
-    }
-
-    getPref(req, res) {
-        preferencesRepo.getUserPreferences("10213289839066797", (err, preferences) => {
-            if (err) {
-                res.json({
-                    rides: null
-                });
-            } else {
-                res.json(preferences);
-            }
-        })
     }
 
 
@@ -65,7 +53,7 @@ class RidesController {
                     rides: null
                 });
             } else {
-                preferencesRepo.getUserPreferences(req.query.fbId, (err, preferences) => {
+                preferencesRepository.getPreferencesByUserId(req.query.fbId, (err, preferences) => {
                     if (err) {
                         res.json({
                             rides: null
@@ -73,8 +61,6 @@ class RidesController {
                     } else {
                         knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
                             console.log("Filtered Rides:");
-                            // console.log(filterRides);
-                            // console.log(" ");
 
                             return res.json(filterRides);
                         })
@@ -83,6 +69,10 @@ class RidesController {
                 )
             }
         });
+    }
+
+    getRidesByKnn(req, res){
+        
     }
 
     getRidesByDriverId(req, res) {
@@ -158,7 +148,8 @@ class RidesController {
 
         let currentPreferences = req.body.Source_Array_preferences;
         // let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
-        preferencesRepo.createOrUpdateUserPreferences(req.body.userId, req.body.choose_index, currentPreferences, (err, boolean) => {
+        // preferencesRepo.createOrUpdateUserPreferences(req.body.userId, req.body.choose_index, currentPreferences, (err, boolean) => {
+            preferencesRepository.addPreferencesToUser(req.body, function(err, preferences){
             if (err) {
                 res.json({ status: false });
             } else {

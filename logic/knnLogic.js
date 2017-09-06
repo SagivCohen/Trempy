@@ -43,8 +43,8 @@ class knnLogic {
 
                         if (currentDestDistance < 10000) {
                             currentAccuracy = model.launch(30, new kNN.Node({
-                                // isFriends: isFriends,
-                                // mutualFriends: numOfMutualFriends,
+                                isFriends: isFriends,
+                                mutualFriends: numOfMutualFriends,
                                 sourceDistance: currentSourceDistance,
                                 destDistance: currentDestDistance,
                                 type: false
@@ -83,8 +83,8 @@ class knnLogic {
 
                             returnRides.push({
                                 ride: ride,
-                                // isFriends: isFriends,
-                                // mutualFriends: numOfMutualFriends,
+                                isFriends: isFriends,
+                                mutualFriends: numOfMutualFriends,
                                 sourceDistance: currentSourceDistance,
                                 destDistance: currentDestDistance,
                                 type: "noChosen"
@@ -100,7 +100,7 @@ class knnLogic {
     compare(a, b) {
         let aPercentage;
         let bPercentage;
-        console.log("A: " + a.currentAccuracy.percentage + " !!! " + a.currentAccuracy.type+ " B: " + b.currentAccuracy.percentage + " !!!! " +b.currentAccuracy.type);
+        // console.log("A: " + a.currentAccuracy.percentage + " !!! " + a.currentAccuracy.type + " B: " + b.currentAccuracy.percentage + " !!!! " + b.currentAccuracy.type);
         if (a.currentAccuracy.type === "noChosen") {
             aPercentage = 1 - a.currentAccuracy.percentage;
         } else {
@@ -119,18 +119,13 @@ class knnLogic {
     initOldPreferencesToKNN(userPreferences) {
         let data = [];
         for (let userPreference of userPreferences[0].preferences) {
-
-            for (let index = 0; index < 30; index++) {
-                let element = userPreference._doc[index];
-
-                data.push(new kNN.Node({
-                    // isFriends: element.isFriends,
-                    // mutualFriends: element.mutualFriends,
-                    sourceDistance: element.sourceDistance,
-                    destDistance: element.destDistance,
-                    type: element.type
-                }))
-            }
+            data.push(new kNN.Node({
+                isFriends: userPreference.isFriends,
+                mutualFriends: userPreference.mutualFriends,
+                sourceDistance: userPreference.sourceDistance,
+                destDistance: userPreference.destDistance,
+                type: userPreference.type
+            }))
         }
         return data;
     }
