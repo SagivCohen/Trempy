@@ -9,7 +9,8 @@ class RidesController {
 
     constructor(router) {
         router.get('/', this.getRides.bind(this));
-        router.get('/params', this.getRidesByParams.bind(this));
+        router.get('/params', this.sortRidesByKnn.bind(this));
+        router.get('/knn', this.getRidesByKnn.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
         router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
         router.get('/:id', this.getRideById.bind(this));
@@ -53,27 +54,29 @@ class RidesController {
                     rides: null
                 });
             } else {
-                preferencesRepository.getPreferencesByUserId(req.query.fbId, (err, preferences) => {
-                    if (err) {
-                        res.json({
-                            rides: null
-                        });
-                    } else {
-                        knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
-                            console.log("Filtered Rides:");
-
-                            return res.json(filterRides);
-                        })
-                    }
-                }
-                )
+                knnLogic.filterRidesByDistance(allRides, src, dst, (err, ridesByDistance) => {
+                    res.json(ridesByDistance);
+                })
             }
         });
     }
 
-    getRidesByKnn(req, res){
-        
+    sortRidesByKnn(req, res) {
+        preferencesRepository.getPreferencesByUserId(req.body.fbId, (err, preferences) => {
+            if (err) {
+                res.json({
+                    rides: null
+                });
+            } else {
+                knnLogic.getRidesByKnn(req.body.extendedRides, preferences, (sortedRides) => {
+                    console.log("Filtered Rides:");
+
+                    return res.json(sortedRides);
+                })
+            }
+        })
     }
+
 
     getRidesByDriverId(req, res) {
         console.log('(*) Get ride by driver id');
@@ -149,7 +152,7 @@ class RidesController {
         let currentPreferences = req.body.Source_Array_preferences;
         // let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
         // preferencesRepo.createOrUpdateUserPreferences(req.body.userId, req.body.choose_index, currentPreferences, (err, boolean) => {
-            preferencesRepository.addPreferencesToUser(req.body, function(err, preferences){
+        preferencesRepository.addPreferencesToUser(req.body, function (err, preferences) {
             if (err) {
                 res.json({ status: false });
             } else {

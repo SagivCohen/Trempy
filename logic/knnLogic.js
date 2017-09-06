@@ -20,82 +20,68 @@ class knnLogic {
     constructor() {
     }
 
-    getRidesByKnn(userId, srcLocation, destLocation, rides, userPreferences, callback) {
+    getRidesByKnn(extendedRides, userPreferences, callback) {
         let returnRides = [];
         if (userPreferences.length > 0) {
             let oldPreferences = this.initOldPreferencesToKNN(userPreferences);
             let model = new kNN(oldPreferences);
 
-            let currentSourceDistance;
-            let currentDestDistance;
             let currentAccuracy;
 
-            for (let ride of rides) {
-                let isFriends = this.checkIsFriends(userId, ride.driverId);
-                let numOfMutualFriends = this.getNumOfMutualFriends(userId, ride.driverId);
+            for (let extendedRide of extendedRides) {
+                currentAccuracy = model.launch(30, new kNN.Node({
+                    isFriends: extendedRide.isFriends,
+                    mutualFriends: extendedRide.numOfMutualFriends,
+                    sourceDistance: extendedRide.currentSourceDistance,
+                    destDistance: extendedRide.currentDestDistance,
+                    type: false
+                }));
 
-                // If they are'nt friends or they hadn't mutual friends then dont return this ride
-                if (isFriends || numOfMutualFriends) {
-                    currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
-
-                    if (currentSourceDistance < 10000) {
-                        currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
-
-                        if (currentDestDistance < 10000) {
-                            currentAccuracy = model.launch(30, new kNN.Node({
-                                isFriends: isFriends,
-                                mutualFriends: numOfMutualFriends,
-                                sourceDistance: currentSourceDistance,
-                                destDistance: currentDestDistance,
-                                type: false
-                            }));
-
-                            returnRides.push({
-                                currentAccuracy: currentAccuracy,
-                                ride: ride,
-                                isFriends: isFriends,
-                                mutualFriends: numOfMutualFriends,
-                                sourceDistance: currentSourceDistance,
-                                destDistance: currentDestDistance,
-                                type: "noChosen"
-                            })
-                        }
-                    }
-                }
+                returnRides.push({
+                    currentAccuracy: currentAccuracy,
+                    ride: extendedRide.ride,
+                    isFriends: extendedRide.isFriends,
+                    mutualFriends: extendedRide.numOfMutualFriends,
+                    sourceDistance: extendedRide.currentSourceDistance,
+                    destDistance: extendedRide.currentDestDistance,
+                    type: "noChosen"
+                })
             }
 
             let resultRides = returnRides.sort(this.compare);
 
             return callback(resultRides);
         } else {
-            for (let ride of rides) {
-                let isFriends = this.checkIsFriends(userId, ride.driverId);
-                let numOfMutualFriends = this.getNumOfMutualFriends(userId, ride.driverId);
-
-                // If they are'nt friends or they hadn't mutual friends then dont return this ride
-                if (isFriends || numOfMutualFriends) {
-                    let currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
-
-                    if (currentSourceDistance < 10000) {
-                        let currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
-
-                        if (currentDestDistance < 10000) {
-
-                            returnRides.push({
-                                ride: ride,
-                                isFriends: isFriends,
-                                mutualFriends: numOfMutualFriends,
-                                sourceDistance: currentSourceDistance,
-                                destDistance: currentDestDistance,
-                                type: "noChosen"
-                            })
-                        }
-                    }
-                }
-            }
-            return callback(returnRides);
+            return callback(extendedRides);
         }
     }
+
+    filterRidesByDistance(allRides, src, dst, callback) {
+        let returnRides = []
+
+        for (let ride of rides) {
+            currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
+
+            if (currentSourceDistance < 10000) {
+                currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
+
+                if (currentDestDistance < 10000) {
+
+                    returnRides.push({
+                        ride: ride,
+                        isFriends: null,
+                        mutualFriends: null,
+                        sourceDistance: currentSourceDistance,
+                        destDistance: currentDestDistance,
+                        type: "noChosen"
+                    })
+                }
+            }
+        }
+
+        return callback(returnRides);
+    }
+
 
     compare(a, b) {
         let aPercentage;
@@ -129,22 +115,6 @@ class knnLogic {
         }
         return data;
     }
-
-    checkIsFriends(userId, driverId) {
-        // FB.api(userId + "/friends/" + driverId,
-        //     function (response) {
-        //         if (response && !response.error) {
-        //             /* handle the result */
-        //         }
-        //     }
-        // );
-        return Math.floor(Math.random() * 2);
-    }
-
-    getNumOfMutualFriends(userId, driverId) {
-        return Math.floor((Math.random() * 100) + 1);
-    }
-
 }
 module.exports = new knnLogic();
 
