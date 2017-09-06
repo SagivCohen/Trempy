@@ -11,6 +11,7 @@ class RidesController {
         router.get('/params', this.getRidesByParams.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
         router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
+        router.get('/pref', this.getPref.bind(this));
         router.get('/:id', this.getRideById.bind(this));
 
         router.post('/', this.addRide.bind(this));
@@ -20,6 +21,18 @@ class RidesController {
         router.put('/:id', this.updateRide.bind(this));
 
         router.delete('/:id', this.deleteRide.bind(this));
+    }
+
+    getPref(req, res) {
+        preferencesRepo.getUserPreferences("10213289839066797", (err, preferences) => {
+            if (err) {
+                res.json({
+                    rides: null
+                });
+            } else {
+                res.json(preferences);
+            }
+        })
     }
 
 
@@ -41,10 +54,10 @@ class RidesController {
         console.log('(*) Get Rides By Params');
 
         let src = req.query.src.split("T");
-        src = {long: src[0], lat: src[1]};
+        src = { long: src[0], lat: src[1] };
 
         let dst = req.query.dst.split("T");
-        dst = {long: dst[0], lat: dst[1]};
+        dst = { long: dst[0], lat: dst[1] };
 
         ridesRepo.getRides((err, allRides) => {
             if (err) {
@@ -53,20 +66,20 @@ class RidesController {
                 });
             } else {
                 preferencesRepo.getUserPreferences(req.query.fbId, (err, preferences) => {
-                        if (err) {
-                            res.json({
-                                rides: null
-                            });
-                        } else {
-                            knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
-                                console.log("Filtered Rides:");
-                                // console.log(filterRides);
-                                // console.log(" ");
+                    if (err) {
+                        res.json({
+                            rides: null
+                        });
+                    } else {
+                        knnLogic.getRidesByKnn(req.query.fbId, src, dst, allRides, preferences, (filterRides) => {
+                            console.log("Filtered Rides:");
+                            // console.log(filterRides);
+                            // console.log(" ");
 
-                                return res.json(filterRides);
-                            })
-                        }
+                            return res.json(filterRides);
+                        })
                     }
+                }
                 )
             }
         });
@@ -122,7 +135,7 @@ class RidesController {
             if (err) {
                 res.json({ status: false, error: 'Insert failed', ride: null });
             } else {
-                res.json({status: true, error: null, ride: ride});
+                res.json({ status: true, error: null, ride: ride });
             }
         });
     }
@@ -133,7 +146,7 @@ class RidesController {
 
         ridesRepo.updateRide(req.params.id, req.body, (err, ride) => {
             if (err) {
-                res.json({status: false});
+                res.json({ status: false });
             } else {
                 res.json(ride);
             }
@@ -143,15 +156,15 @@ class RidesController {
     joinRide(req, res) {
         console.log('(*) Join a Ride');
 
-let currentPreferences = req.body.Source_Array_preferences;
-    // let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
+        let currentPreferences = req.body.Source_Array_preferences;
+        // let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
         preferencesRepo.createOrUpdateUserPreferences(req.body.userId, req.body.choose_index, currentPreferences, (err, boolean) => {
             if (err) {
-                res.json({status: false});
+                res.json({ status: false });
             } else {
                 ridesRepo.joinRide(currentPreferences[req.body.choose_index].ride, req.body.userId, (err, ride) => {
                     if (err) {
-                        res.json({status: false});
+                        res.json({ status: false });
                     } else {
                         res.json(req.body);
                     }
@@ -178,9 +191,9 @@ let currentPreferences = req.body.Source_Array_preferences;
 
         ridesRepo.deleteRide(req.params.id, (err) => {
             if (err) {
-                res.json({status: false});
+                res.json({ status: false });
             } else {
-                res.json({status: true});
+                res.json({ status: true });
             }
         });
     }

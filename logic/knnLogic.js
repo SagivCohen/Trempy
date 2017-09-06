@@ -42,11 +42,11 @@ class knnLogic {
                         currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
 
                         if (currentDestDistance < 10000) {
-                            currentAccuracy = model.launch(3, new kNN.Node({
-                                isFriends: isFriends,
-                                mutualFriends: numOfMutualFriends,
+                            currentAccuracy = model.launch(30, new kNN.Node({
+                                // isFriends: isFriends,
+                                // mutualFriends: numOfMutualFriends,
                                 sourceDistance: currentSourceDistance,
-                                destDistance: currentSourceDistance,
+                                destDistance: currentDestDistance,
                                 type: false
                             }));
 
@@ -64,7 +64,9 @@ class knnLogic {
                 }
             }
 
-            return callback(returnRides.sort(this.compare));
+            let resultRides = returnRides.sort(this.compare);
+
+            return callback(resultRides);
         } else {
             for (let ride of rides) {
                 let isFriends = this.checkIsFriends(userId, ride.driverId);
@@ -81,8 +83,8 @@ class knnLogic {
 
                             returnRides.push({
                                 ride: ride,
-                                isFriends: isFriends,
-                                mutualFriends: numOfMutualFriends,
+                                // isFriends: isFriends,
+                                // mutualFriends: numOfMutualFriends,
                                 sourceDistance: currentSourceDistance,
                                 destDistance: currentDestDistance,
                                 type: "noChosen"
@@ -98,13 +100,14 @@ class knnLogic {
     compare(a, b) {
         let aPercentage;
         let bPercentage;
-        if (a.currentAccuracy.type === "NotChosen") {
+        console.log("A: " + a.currentAccuracy.percentage + " !!! " + a.currentAccuracy.type+ " B: " + b.currentAccuracy.percentage + " !!!! " +b.currentAccuracy.type);
+        if (a.currentAccuracy.type === "noChosen") {
             aPercentage = 1 - a.currentAccuracy.percentage;
         } else {
             aPercentage = a.currentAccuracy.percentage;
         }
 
-        if (b.currentAccuracy.type === "Chosen") {
+        if (b.currentAccuracy.type === "noChosen") {
             bPercentage = 1 - b.currentAccuracy.percentage;
         } else {
             bPercentage = b.currentAccuracy.percentage;
@@ -117,17 +120,17 @@ class knnLogic {
         let data = [];
         for (let userPreference of userPreferences[0].preferences) {
 
-        for (let index = 0; index < 30; index++) {
-            let element = userPreference._doc[index];
-            
-            data.push(new kNN.Node({
-                isFriends: element.isFriends,
-                mutualFriends: element.mutualFriends,
-                sourceDistance: element.sourceDistance,
-                destDistance: element.destDistance,
-                type: element.type
-            }))
-        }
+            for (let index = 0; index < 30; index++) {
+                let element = userPreference._doc[index];
+
+                data.push(new kNN.Node({
+                    // isFriends: element.isFriends,
+                    // mutualFriends: element.mutualFriends,
+                    sourceDistance: element.sourceDistance,
+                    destDistance: element.destDistance,
+                    type: element.type
+                }))
+            }
         }
         return data;
     }
@@ -144,7 +147,7 @@ class knnLogic {
     }
 
     getNumOfMutualFriends(userId, driverId) {
-           return Math.floor((Math.random() * 100) + 1); 
+        return Math.floor((Math.random() * 100) + 1);
     }
 
 }
