@@ -1,5 +1,8 @@
 const usersRepo  = require('../../../data/repos/usersRepository'),
-      util       = require('util');
+      util       = require('util'),
+      http       = require('http'),
+      io         = require('socket.io').listen(http),
+      port       = 8080;
 
 class UsersController {
 
@@ -7,6 +10,24 @@ class UsersController {
         router.get('/', this.getUsers.bind(this));
         router.get('/:id', this.getUserById.bind(this));
         router.post('/:id', this.addUser.bind(this));
+
+        this.userConnectionsList = [];
+        this.init();
+    }
+
+    init(){
+        var _this = this;
+        console.log("******* init socket io*****");
+        io.sockets.on('connection', function(socket){
+            console.log("client connected: " + socket.id);
+            usersRepo.addUserSocket(socket);
+
+            socket.on('onInit', function(data){
+                usersRepo.addUserId(data, socket);
+            })
+        });
+
+        io.listen(port);
     }
 
     //GET
