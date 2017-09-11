@@ -29,23 +29,25 @@ class knnLogic {
             let currentAccuracy;
 
             for (let extendedRide of extendedRides) {
-                currentAccuracy = model.launch(30, new kNN.Node({
-                    isFriends: extendedRide.isFriends,
-                    mutualFriends: extendedRide.numOfMutualFriends,
-                    sourceDistance: extendedRide.currentSourceDistance,
-                    destDistance: extendedRide.currentDestDistance,
-                    type: false
-                }));
+                if (extendedRide.mutualFriends !== null) {
+                    currentAccuracy = model.launch(30, new kNN.Node({
+                        isFriends: extendedRide.isFriends,
+                        mutualFriends: extendedRide.mutualFriends,
+                        sourceDistance: extendedRide.sourceDistance,
+                        destDistance: extendedRide.destDistance,
+                        type: false
+                    }));
 
-                returnRides.push({
-                    currentAccuracy: currentAccuracy,
-                    ride: extendedRide.ride,
-                    isFriends: extendedRide.isFriends,
-                    mutualFriends: extendedRide.numOfMutualFriends,
-                    sourceDistance: extendedRide.currentSourceDistance,
-                    destDistance: extendedRide.currentDestDistance,
-                    type: "noChosen"
-                })
+                    returnRides.push({
+                        currentAccuracy: currentAccuracy,
+                        ride: extendedRide.ride,
+                        isFriends: extendedRide.isFriends,
+                        mutualFriends: extendedRide.mutualFriends,
+                        sourceDistance: extendedRide.sourceDistance,
+                        destDistance: extendedRide.destDistance,
+                        type: "noChosen"
+                    })
+                }
             }
 
             let resultRides = returnRides.sort(this.compare);
@@ -54,7 +56,7 @@ class knnLogic {
         } else {
 
             for (let extendedRide of extendedRides) {
-                if(extendedRide.mutualFriends !== null){
+                if (extendedRide.mutualFriends !== null) {
                     returnRides.push(extendedRide);
                 }
             }
@@ -68,10 +70,10 @@ class knnLogic {
         for (let ride of allRides) {
             var currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
 
-            if (currentSourceDistance < 10000) {
+            if (currentSourceDistance < 10) {
                 var currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
 
-                if (currentDestDistance < 10000) {
+                if (currentDestDistance < 10) {
 
                     returnRides.push({
                         ride: ride,

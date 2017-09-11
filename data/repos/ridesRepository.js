@@ -6,8 +6,8 @@ GeoLocation = require('../models/geo-location'),
 
 class RidesRepository {
     //GET
-    getRidesByDate(dbDate, callback) {
-        let splitDate = dbDate.split(" ");
+    getRidesByDateFinal(dbDate, callback) {
+        let splitDate = dbDate.split("T");
         let date = splitDate[0];
         let time = splitDate[1];
         let splitTime = time.split(":");
