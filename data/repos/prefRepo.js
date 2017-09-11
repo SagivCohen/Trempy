@@ -24,7 +24,7 @@ class PreferencesRepository {
 		let id = body.userId;
 		let index = body.choose_index;
 		var preferences = [];
-		var srcPref = body.Source_Array_preferences;
+		var srcPref = JSON.parse(body.Source_Array_preferences);
 		srcPref[index].type = "Choose"
 		for (var i = 0; i < srcPref.length; i++) {
 

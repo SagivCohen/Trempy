@@ -158,7 +158,8 @@ class RidesController {
             if (err) {
                 res.json({ status: false });
             } else {
-                ridesRepo.joinRide(currentPreferences[req.body.choose_index].ride, req.body.userId, (err, ride) => {
+                let preferencesJSON = JSON.parse(currentPreferences);
+                ridesRepo.joinRide(preferencesJSON[req.body.choose_index].ride, req.body.userId, (err, ride) => {
                     if (err) {
                         res.json({ status: false });
                     } else {

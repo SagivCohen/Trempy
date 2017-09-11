@@ -53,9 +53,12 @@ class knnLogic {
             return callback(resultRides);
         } else {
 
-            // let responseRides = extendedRides;
-            let responseRides = JSON.parse(extendedRides)
-            return callback(responseRides);
+            for (let extendedRide of extendedRides) {
+                if(extendedRide.mutualFriends !== null){
+                    returnRides.push(extendedRide);
+                }
+            }
+            return callback(returnRides);
         }
     }
 
