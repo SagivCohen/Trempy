@@ -297,23 +297,23 @@ class RidesRepository {
             });
         });
     }
-    unjoinRide(body, callback) {
+    unjoinRide(rideId, userId, callback) {
 
         //TODO: validate user exist
-        this.getRideById(body.rideId, (err, ride) => {
+        this.getRideById(rideId, (err, ride) => {
             if (err) {
                 console.log(`(!) Failed to unjoin ride: ${err}`);
                 return callback(err);
             }
 
             //TODO: return 'reject' (No room for new trempist)
-            if (ride.Passengers.indexOf(body.userId) < 0) {
+            if (ride.Passengers.indexOf(userId) < 0) {
                 return callback(err);
             }
 
             ride.seets = ride.seets + 1;
             console.log(ride.Passengers);
-            ride.Passengers.splice(ride.Passengers.indexOf(body.userId), 1);
+            ride.Passengers.splice(ride.Passengers.indexOf(userId), 1);
             console.log(ride.Passengers);
 
             ride.save((err, ride) => {

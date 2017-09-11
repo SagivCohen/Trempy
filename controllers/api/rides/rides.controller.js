@@ -165,12 +165,8 @@ class RidesController {
                     if (err) {
                         res.json({ status: false });
                     } else {
-<<<<<<< HEAD
-                        res.json(ride);
-=======
                         usersRepo.handleJoinRide(preferencesJSON[req.body.choose_index].ride, req.body.userId);
-                        res.json(req.body);
->>>>>>> 581708667079287a606515e11978137a953a63f4
+                        res.json(ride);
                     }
                 });
             }
@@ -178,13 +174,15 @@ class RidesController {
     }
     unjoinRide(req, res) {
         console.log('(*) Unjoin a Ride');
+        let currentPreferences = req.body.Source_Array_preferences;
+        let preferencesJSON = JSON.parse(currentPreferences);
 
-        ridesRepo.unjoinRide(req.body, (err, ride) => {
+        ridesRepo.unjoinRide(preferencesJSON[req.body.choose_index].ride._id, req.body.userId, (err, ride) => {
             if (err) {
                 res.json({ status: false });
             } else {
                 //TODO: Inform driverID (nice to have)
-                usersRepo.handleUnJoinRide(ride, req.body.userId);
+                usersRepo.handleUnJoinRide(preferencesJSON[req.body.choose_index].ride, req.body.userId);
                 res.json(ride);
             }
         });
