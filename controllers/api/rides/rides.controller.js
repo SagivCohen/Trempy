@@ -164,6 +164,7 @@ class RidesController {
                 res.json({ status: false });
             } else {
                 //TODO: Inform driverID (nice to have)
+                usersRepo.handleUnJoinRide(ride, req.body.userId);
                 res.json(ride);
             }
         });
