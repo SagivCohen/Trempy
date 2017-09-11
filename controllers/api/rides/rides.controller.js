@@ -1,4 +1,5 @@
 const ridesRepo = require('../../../data/repos/ridesRepository'),
+    usersRepo = require('../../../data/repos/usersRepository'),
     preferencesRepo = require('../../../data/repos/preferencesRepository'),
     preferencesRepository = require('../../../data/repos/prefRepo'),
     util = require('util'),
@@ -164,7 +165,7 @@ class RidesController {
                     if (err) {
                         res.json({ status: false });
                     } else {
-                        usersRepo.handleJoinRide(ride, req.body.userId);
+                        usersRepo.handleJoinRide(preferencesJSON[req.body.choose_index].ride, req.body.userId);
                         res.json(req.body);
                     }
                 });
