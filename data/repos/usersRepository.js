@@ -83,5 +83,13 @@ handleJoinRide(ride, userId){
     }
 }
 
+class UserSocket{
+    constructor(userId, userSocketId, userSocket){
+        this.id = userId;
+        this.socketId = userSocketId;
+        this.socket = userSocket;
+    }
+}
+
 module.exports = new UsersRepository();
 
