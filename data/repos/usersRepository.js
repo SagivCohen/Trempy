@@ -4,6 +4,57 @@ const mongoose = require('mongoose'),
 
 class UsersRepository {
 
+     constructor(){
+        this.userConnectionsList = [];
+    }
+
+addUserSocket(socket){
+    var _this = this;
+    for(var i in _this.userConnectionsList){
+        if(_this.userConnectionsList[i].socketid === socket.id){
+            return;
+        }
+    }
+
+    var user = new UserSocket("", socket.id, socket);
+    _this.userConnectionsList.push(user);
+
+    console.log(_this.userConnectionsList);
+}
+
+addUserId(userId, socket){
+    var _this = this;
+    for(var i in _this.userConnectionsList){
+        console.log("start init user id: " + userId);
+        if(_this.userConnectionsList[i].socketId === socket.id){
+            _this.userConnectionsList[i].id = userId;
+            console.log("success");
+            break;
+        }
+    }
+}
+
+handleJoinRide(ride, userId){
+    var _this = this;
+    console.log(ride);
+    for(var i in _this.userConnectionsList){
+        if(_this.userConnectionsList[i].id === ride.driverId){
+            _this.userConnectionsList[i].socket.emit('onJoinTremp', userId);
+        }
+    }
+
+}
+
+handleUnJoinRide(ride, userId){
+    var _this = this;
+    console.log(ride);
+    for(var i in _this.userConnectionsList){
+        if(_this.userConnectionsList[i].id === ride.driverId){
+            _this.userConnectionsList[i].socket.emit('onUnJoinTremp', userId);
+        }
+    }
+}
+
     //GET
     getUsers(callback) {
 
@@ -39,6 +90,14 @@ class UsersRepository {
             }
             return callback(null, user);
         });
+    }
+}
+
+class UserSocket{
+    constructor(userId, userSocketId, userSocket){
+        this.id = userId;
+        this.socketId = userSocketId;
+        this.socket = userSocket;
     }
 }
 

@@ -5,6 +5,7 @@ const ridesRepo = require('../../../data/repos/ridesRepository'),
     knnLogic = require("../../../logic/knnLogic");
 
 
+
 class RidesController {
 
     constructor(router) {
@@ -163,6 +164,7 @@ class RidesController {
                     if (err) {
                         res.json({ status: false });
                     } else {
+                        usersRepo.handleJoinRide(ride, req.body.userId);
                         res.json(req.body);
                     }
                 });
@@ -177,6 +179,7 @@ class RidesController {
                 res.json({ status: false });
             } else {
                 //TODO: Inform driverID (nice to have)
+                usersRepo.handleUnJoinRide(ride, req.body.userId);
                 res.json(ride);
             }
         });
