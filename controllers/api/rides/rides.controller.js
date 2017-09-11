@@ -163,7 +163,7 @@ class RidesController {
                     if (err) {
                         res.json({ status: false });
                     } else {
-                        res.json(req.body);
+                        res.json(ride);
                     }
                 });
             }
