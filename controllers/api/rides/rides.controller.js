@@ -9,13 +9,14 @@ class RidesController {
 
     constructor(router) {
         router.get('/', this.getRides.bind(this));
-        router.get('/params', this.sortRidesByKnn.bind(this));
-        router.get('/knn', this.getRidesByKnn.bind(this));
+        router.get('/params', this.getRidesByParams.bind(this));
         router.get('/driver/:id', this.getRidesByDriverId.bind(this));
         router.get('/joined/:id', this.getJoinedRidesByUserId.bind(this));
         router.get('/:id', this.getRideById.bind(this));
 
         router.post('/', this.addRide.bind(this));
+
+        router.put('/knn', this.sortRidesByKnn.bind(this));
 
         router.put('/join', this.joinRide.bind(this));
         router.put('/unjoin', this.unjoinRide.bind(this));
@@ -55,20 +56,21 @@ class RidesController {
                 });
             } else {
                 knnLogic.filterRidesByDistance(allRides, src, dst, (err, ridesByDistance) => {
-                    res.json(ridesByDistance);
+                    return res.json(ridesByDistance);
                 })
             }
         });
     }
 
     sortRidesByKnn(req, res) {
-        preferencesRepository.getPreferencesByUserId(req.body.fbId, (err, preferences) => {
+        let currentPreferences = JSON.parse(req.body.Source_Array_preferences);
+        preferencesRepository.getPreferencesByUserId(currentPreferences.fbId, (err, preferences) => {
             if (err) {
                 res.json({
                     rides: null
                 });
             } else {
-                knnLogic.getRidesByKnn(req.body.extendedRides, preferences, (sortedRides) => {
+                knnLogic.getRidesByKnn(currentPreferences.extendedRides, preferences, (sortedRides) => {
                     console.log("Filtered Rides:");
 
                     return res.json(sortedRides);

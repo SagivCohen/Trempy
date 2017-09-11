@@ -52,18 +52,21 @@ class knnLogic {
 
             return callback(resultRides);
         } else {
-            return callback(extendedRides);
+
+            // let responseRides = extendedRides;
+            let responseRides = JSON.parse(extendedRides)
+            return callback(responseRides);
         }
     }
 
-    filterRidesByDistance(allRides, src, dst, callback) {
+    filterRidesByDistance(allRides, srcLocation, destLocation, callback) {
         let returnRides = []
 
-        for (let ride of rides) {
-            currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
+        for (let ride of allRides) {
+            var currentSourceDistance = distanceLogic.getDistanceFromLatLonInKm(srcLocation.lat, srcLocation.long, ride.sourceAddress.lat, ride.sourceAddress.long);
 
             if (currentSourceDistance < 10000) {
-                currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
+                var currentDestDistance = distanceLogic.getDistanceFromLatLonInKm(destLocation.lat, destLocation.long, ride.destAddress.lat, ride.destAddress.long);
 
                 if (currentDestDistance < 10000) {
 
@@ -79,7 +82,7 @@ class knnLogic {
             }
         }
 
-        return callback(returnRides);
+        return callback(null, returnRides);
     }
 
 
