@@ -45,6 +45,16 @@ handleJoinRide(ride, userId){
 
 }
 
+handleUnJoinRide(ride, userId){
+    var _this = this;
+    console.log(ride);
+    for(var i in _this.userConnectionsList){
+        if(_this.userConnectionsList[i].id === ride.driverId){
+            _this.userConnectionsList[i].socket.emit('onUnJoinTremp', userId);
+        }
+    }
+}
+
     //GET
     getUsers(callback) {
 
