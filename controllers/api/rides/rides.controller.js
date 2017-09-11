@@ -1,5 +1,6 @@
 const ridesRepo = require('../../../data/repos/ridesRepository'),
-    distanceUtil = require('../../../logic/distanceLogic');
+    distanceUtil = require('../../../logic/distanceLogic'),
+    usersRepo  = require('../../../data/repos/usersRepository');
 
 class RidesController {
 
@@ -149,6 +150,8 @@ class RidesController {
                 res.json({ status: false });
             } else {
                 //TODO: Inform driverID (nice to have)
+                console.log("the ride is: "+ ride);
+                usersRepo.handleJoinRide(ride, req.body.userId);
                 res.json(ride);
             }
         });
